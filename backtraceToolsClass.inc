@@ -4,10 +4,12 @@
 * 程式追蹤
 */
 
+namespace m5D02F22739AA11E4B3C6005056847E34;
+
 /**
 * 中斷點追蹤工具類別
 */
-class backtraceTools {
+class backtraceToolsClass {
 	/**
 	* @brief 設定中斷點
 	* @param string $msg 中斷點說明

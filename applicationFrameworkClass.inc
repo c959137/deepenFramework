@@ -4,11 +4,19 @@
 * 框架主檔
 */
 
+namespace m5D02F22739AA11E4B3C6005056847E34;
+
+require 'propertysClass.inc';
+require 'instanceClass.inc';
+
+
 /**
 * 系統框架類別
 */
-class applicationFramework
+class applicationFrameworkClass 
 {
+	use propertysClass, instanceClass;
+	
 	const KEY_APPLICATION_UID = 'APPLICATION_UID';			///< 系統編號鍵值 
 	const KEY_RESOURCES_DATA = 'DATA_RESOURCES';			///< 資源目錄鍵值 
 	const KEY_RESOURCES_CONFIG = 'CONFIG_RESOURCES';		///< 設定目錄鍵值 
@@ -16,6 +24,7 @@ class applicationFramework
 	
 	private static $_staticParams = [];
 	
+	private $_instanceParams = [];
 	
 	/**
 	* @brief 取得系統編號
@@ -211,5 +220,72 @@ class applicationFramework
 		0774 => drwxr-xr--
 		*/
 		return $flag;
+	}
+	/**
+	* @brief 輸出版本資訊
+	*/
+	public static function version()
+	{
+		die('版本編號 1.00');
+	}
+	
+	/**
+	* @brief 載入指定的類別
+	* @param string $className 類別
+	* @return string 
+	*/
+	public static function classLoader($className, $moduleUid = '5D02F22739AA11E4B3C6005056847E34')
+	{
+		$moduleClass = static::moduleClassLoader($moduleUid);
+		return $moduleClass::classLoader($className);
+		
+		$fullClassName = $className; 
+		if (class_exists($fullClassName)) {
+			return $fullClassName;
+		}
+		$fn = dirname(__FILE__) . DIRECTORY_SEPARATOR . "{$className}.inc";
+		if (!file_exists($fn)) {
+			return false;
+		}
+		require $fn;
+		return $className;
+	}
+	
+	/**
+	* @brief 載入指定的模組管理類別
+	* @param string $moduleUid 模組編號
+	* @return string 模組類別
+	*/
+	public static function moduleClassLoader($moduleUid = '5D02F22739AA11E4B3C6005056847E34')
+	{
+		$keyName = __FUNCTION__;
+		if (!isset(self::$_staticParams[$keyName])) {
+			self::$_staticParams[$keyName] = [];
+		}
+		if (!isset(self::$_staticParams[$keyName][$moduleUid])) {
+			$moduleKeyName = 'MODULE_' . $moduleUid;
+			if(!isset($_SERVER[$moduleKeyName])) {
+				throw new \exception("指定的模組 [{$moduleUid}] 設未設定");
+			}
+			$rootPath = $_SERVER[$moduleKeyName];
+			if (substr($rootPath, -1) != DIRECTORY_SEPARATOR) {
+				$rootPath .= DIRECTORY_SEPARATOR;
+			}
+			$fn = $rootPath . 'moduleManagerClass.inc';
+			if (!file_exists($fn)) {
+				throw new \exception("指定的模組檔案 不存在");
+			}
+			require $fn;
+			
+			$className = "m{$moduleUid}\\moduleManagerClass";
+			if (!class_exists($className)) {
+				throw new \exception("指定的模組類別 [{$className}] 不存在");
+			}
+			self::$_staticParams[$keyName][$moduleUid] = [
+				'file' => $fn,
+				'className' => $className,
+			];
+		}
+		return self::$_staticParams[$keyName][$moduleUid]['className'];
 	}
 }
