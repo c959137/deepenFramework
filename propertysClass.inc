@@ -20,6 +20,17 @@ trait propertysClass
 	*    - 方法		::$propNameGet
 	*    - 靜態變數 ::$_staticParams
 	*    - 動態變數 ::$_instanceParams
+	
+	[
+		'propertys' => [
+			'className' => [
+				'get' => '',		// 是否可讀
+				'set' => '',		// 是否可寫
+				'value' => ''		// 值
+			]
+		]
+	]
+	
 	* @endcode
 	* @author nico chen 2015-01-13
 	* @version 0.00.01
@@ -34,12 +45,13 @@ trait propertysClass
 			return $this->$methodName();
 		}
 		if (isset(self::$_staticParams['propertys'][$propName])) {
-			return self::$_staticParams['propertys'][$propName];
+			self::$_staticParams['propertys'][$propName] += ['get' => true, 'value' => ''];
+			return (self::$_staticParams['propertys'][$propName]['get']) ? self::$_staticParams['propertys'][$propName]['value'] : null;
 		}
 		if (isset($this->_instanceParams['propertys'][$propName])) {
-			return $this->_instanceParams['propertys'][$propName];
+			$this->_instanceParams['propertys'][$propName] += ['get' => true, 'value' => ''];
+			return ($this->_instanceParams['propertys'][$propName]['get']) ? $this->_instanceParams['propertys'][$propName]['value'] : null;
 		}
-		
 		throw new \exception ("指定的屬性 [{$propName}] 不存在");
 	}
 
@@ -66,12 +78,33 @@ trait propertysClass
 			return $this->$methodName($value);
 		}
 		if (isset(self::$_staticParams['propertys'][$propName])) {
-			self::$_staticParams['propertys'][$propName] = $value;
+			self::$_staticParams['propertys'][$propName] += ['set' => true];
+			if (self::$_staticParams['propertys'][$propName]['set']) {
+				self::$_staticParams['propertys'][$propName]['value'] = $value;
+			}
+			return;
 		}
 		if (isset($this->_instanceParams['propertys'][$propName])) {
-			$this->_instanceParams['propertys'][$propName] = $value;
+			$this->_instanceParams['propertys'][$propName] += ['set' => true];
+			if ($this->_instanceParams['propertys'][$propName]['set']) {
+				$this->_instanceParams['propertys'][$propName]['value'] = $value;	
+			}
+			return;
 		}
 		
+		throw new \exception ("指定的屬性 [{$propName}] 不存在");
+	}
+	
+	protected function propertySet($propName, $value)
+	{
+		if (isset(self::$_staticParams['propertys'][$propName])) {
+			self::$_staticParams['propertys'][$propName]['value'] = $value;
+			return;
+		}
+		if (isset($this->_instanceParams['propertys'][$propName])) {
+			$this->_instanceParams['propertys'][$propName]['value'] = $value;	
+			return;
+		}
 		throw new \exception ("指定的屬性 [{$propName}] 不存在");
 	}
 }
