@@ -231,24 +231,15 @@ class applicationFrameworkClass
 	
 	/**
 	* @brief 載入指定的類別
-	* @param string $className 類別
-	* @return string 
+	* @param string $className 類別名稱
+	* @param string $middleNs 中間的命名空間 
+	* @param string $moduleUid 模組編號
+	* @return string 完整的類別名稱
 	*/
-	public static function classLoader($className, $moduleUid = '5D02F22739AA11E4B3C6005056847E34')
+	public static function classLoader($className, $middleNs = '', $moduleUid = '5D02F22739AA11E4B3C6005056847E34')
 	{
 		$moduleClass = static::moduleClassLoader($moduleUid);
-		return $moduleClass::classLoader($className);
-		
-		$fullClassName = $className; 
-		if (class_exists($fullClassName)) {
-			return $fullClassName;
-		}
-		$fn = dirname(__FILE__) . DIRECTORY_SEPARATOR . "{$className}.inc";
-		if (!file_exists($fn)) {
-			return false;
-		}
-		require $fn;
-		return $className;
+		return $moduleClass::classLoader($className, $middleNs);
 	}
 	
 	/**
@@ -261,6 +252,9 @@ class applicationFrameworkClass
 		$keyName = __FUNCTION__;
 		if (!isset(self::$_staticParams[$keyName])) {
 			self::$_staticParams[$keyName] = [];
+		}
+		if (!$moduleUid) {
+			$moduleUid = '5D02F22739AA11E4B3C6005056847E34';
 		}
 		if (!isset(self::$_staticParams[$keyName][$moduleUid])) {
 			$moduleKeyName = 'MODULE_' . $moduleUid;
