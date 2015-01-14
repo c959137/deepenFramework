@@ -8,7 +8,7 @@ namespace m5D02F22739AA11E4B3C6005056847E34;
 
 require 'propertysClass.inc';
 require 'instanceClass.inc';
-
+require 'traits/arrayPathClass.inc';
 
 /**
 * 系統框架類別
@@ -35,7 +35,7 @@ class applicationFrameworkClass
 	*   <b>- nico chen / 2015-01-07</b>    
 	*      - 建立函數			
 	*/
-	public function applicationUid()
+	public static function applicationUid()
 	{
 		return (isset($_SERVER[self::KEY_APPLICATION_UID])) ? $_SERVER[self::KEY_APPLICATION_UID] : '';
 	}
