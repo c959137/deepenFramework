@@ -1,10 +1,12 @@
 <?php
 namespace m5D02F22739AA11E4B3C6005056847E34;
-
 class templateDocumentClass
 {
 	use propertysClass, instanceClass;
 
+	const BLOCK_LIST_KEYNAME = 'blockList';
+	const LABEL_LIST_KEYNAME = 'labelList';
+	
 	private static $_staticParams = [];
 	private $_instanceParams = [
 		'propertys' => [
@@ -16,8 +18,15 @@ class templateDocumentClass
 				'get' => true,
 				'set' => false,
 			],
-			
+			'blockUid' => [
+				'get' => true,
+				'set' => false,
+			],
 			'rawData' => [
+				'get' => true,
+				'set' => false,
+			],
+			'templateContent' => [
 				'get' => true,
 				'set' => false,
 			],
@@ -27,7 +36,13 @@ class templateDocumentClass
     public function __construct($blockName = '', templateDocumentClass $ownerInstance = null){
 		$this->propertySet('ownerInstance', $ownerInstance);
 		$this->propertySet('blockName', $blockName);
+		$this->propertySet('blockUid', uniqid('td', true));
     }
+	
+	public function __destruct()
+	{
+		
+	}
 	
 	public function loadFile($file)
 	{
@@ -42,35 +57,130 @@ class templateDocumentClass
 		$this->propertySet('rawData', $rawData);
 		return $this->analyzeContents($rawData);
 	}
-	protected function reset()
+	
+	public function pathGet()
 	{
-		foreach ($this->_instanceParams['propertys'] as $propName => &$info) {
-			unset($info['value']);
+		$ownerInstance = $this->ownerInstance;
+		if (!$ownerInstance) {
+			return '/';
 		}
+		
+		$path = $ownerInstance->path;
+		return $path . $this->blockName . '/';
 	}
 	
+	protected function reset()
+	{
+		static $excludeMaps = [
+			'ownerInstance' => '',
+			'blockUid' => '',
+			'blockName' => '',
+			'rawData' => '',
+		];
+		
+		foreach ($this->_instanceParams['propertys'] as $propName => &$info) {
+			if (!isset($excludeMaps[$propName])) {
+				unset($info['value']);
+			}
+		}
+		
+		$this->propertySet('blockUid', uniqid('td', true));
+		$blockList = &$this->_instanceParams[self::BLOCK_LIST_KEYNAME];
+		if ($blockList) {
+			foreach ($blockList as $info) {
+				$info['instance']->__destruct();
+				unset($info['instance']);
+			}
+			unset($blockList);
+			unset($this->_instanceParams[self::BLOCK_LIST_KEYNAME]);
+		}
+		$this->_instanceParams[self::BLOCK_LIST_KEYNAME] = [];
+		$this->_instanceParams[self::LABEL_LIST_KEYNAME] = [];
+	}
+	
+	/**
+	* @brief 分析內容, 建立套版模型
+	* @param string $rawData 要分析的內容
+	* @return boolean 成功或失敗
+	* @code
+    *   # aaaaa 標籤
+	* 	(s:-aaaaa-:)
+	* 
+	*   # aaaaa 區塊
+	*   <!--:aaaaa:--> <!--/:aaaaa:-->
+	* @endcode
+	
+	* @warning 區塊名稱不可重複, 否則會造成誤判<br/>標簽名稱可以重複
+	
+	* @author nico chen 2015-01-15
+	* @version 0.00.01
+	* \b CHANGE \b HISTORY: <br>	 
+	*   <b>- nico chen / 2015-01-15</b>    
+	*      - 建立函數			
+	*/
 	protected function analyzeContents($rawData)
 	{
 		$this->reset();
-		@preg_match_all('%<!--:(?P<block>.*):-->(?P<content>.*?)<!--/:(?P=block):-->%si', $rawData, $matchs);
+		@preg_match_all('%<!--:(?P<blockName>.*):-->(?P<rawData>.*?)<!--/:(?P=blockName):-->%si', $rawData, $matchs);
 		$lastCode = preg_last_error();
 		if ($lastCode != PREG_NO_ERROR) {
 			$pregExceptionClass = \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('pregExceptionClass', 'exceptions');
 			throw new $pregExceptionClass();
 		}
-		foreach ($matchs["block"] as $idx => $blocName){
-var_dump($matchs);
-xxx();			
-			if(!isset ($this->_list_by_block_name[$block_name])){
-			$item = new $this->class_name($block_name, $this);
-			$item->load_content($matchs["content"][$idx]);
-			$this->_list_by_ident_id[$item->name] = $item;
-			$this->_list_by_block_name[$item->block_name] = $item;
-			$this->_sub_doc_list[$item->block_name] = null;                                         
-			//$this->_sub_doc_list[$item->block_name] = "";                                         
-			$content_src = preg_replace("%<!--:{$block_name}:-->(?P<content>.*?)<!--/:{$block_name}:-->%si", "(t:-{$item->name}-:)", $content_src);
+		$className = get_called_class();
+		$blockList = &$this->_instanceParams[self::BLOCK_LIST_KEYNAME];
+		$labelList = &$this->_instanceParams[self::LABEL_LIST_KEYNAME];
+		foreach ($matchs["blockName"] as $idx => $blocName){
+			if (!isset($blockList[$blocName])) {
+				$childInstance = new $className($blocName, $this);
+				$childInstance->loadContents($matchs["rawData"][$idx]);
+				$childBlockUid = $childInstance->blockUid;
+				$blockList[$blocName] = [
+					'blockUid' => $childBlockUid,
+					'instance' => $childInstance,
+				];
+				$rawData = preg_replace("%<!--:{$blocName}:-->(?P<rawData>.*?)<!--/:{$blocName}:-->%si", "(t:-{$childInstance->blockUid}-:)", $rawData);
+			}
+		};
+		$this->propertySet('templateContent', $rawData);
+		if (preg_match_all('/\(s:-(?P<labelName>.*?)-:\)/si', $rawData, $matchs)){
+			foreach($matchs["labelName"] as $labelName){
+				$labelList[$labelName] = '';
 			};
 		};
+		unset($blockList);
+		unset($labelList);
+	}
+	
+	public function out(\m5D02F22739AA11E4B3C6005056847E34\templateDocumentProviderInterface $templateDocumentProviderInstance)
+	{
+		$content = $this->templateContent;
+		$blockList = &$this->_instanceParams[self::BLOCK_LIST_KEYNAME];
+		$labelList = &$this->_instanceParams[self::LABEL_LIST_KEYNAME];
+		$path = $this->path;
+		if ($labelList) {
+			foreach ($labelList as $labelName => $noUsed) {
+		if (defined('AAAAAAAAAA')) {
+			echo $path . $labelName, '<br/>';
+		}
+				$value = $templateDocumentProviderInstance->queryValue($this, $path . $labelName);
+				if (is_null($value)) {
+					$value = $labelName;
+				}
+				$content = preg_replace("/\(s:-{$labelName}-:\)/si", $value, $content);
+			}
+		}
+		if ($blockList) {
+			foreach ($blockList as $blockName => $blockInfo) {
+				$value = $templateDocumentProviderInstance->queryValue($blockInfo['instance'], $path . $blockName);
+				if (is_null($value)) {
+					$value = $blockName;
+				}
+				$content = preg_replace("/\(t:-{$blockInfo['blockUid']}-:\)/si", $value, $content);
+			}
+		}
 		
+		
+		return $content;
 	}
 }

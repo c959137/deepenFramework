@@ -2,6 +2,69 @@
 namespace m5D02F22739AA11E4B3C6005056847E34\traits;
 trait arrayPathClass 
 {
+	/**
+	* @brief 將路徑轉換為陣列的索引
+	* @param string $path 路徑
+	* @return mixed 
+	* @code
+    *   # 範例		
+	* 	pathToArrayKey('/a/b/c')
+	* 	[
+			'namespace' => 'a',
+			'accessCmd' => '->b->c'
+	*	]
+	* 
+	* @endcode
+	
+	* @author nico chen 2015-01-15
+	* @version 0.00.01
+	* \b CHANGE \b HISTORY: <br>	 
+	*   <b>- nico chen / 2015-01-15</b>    
+	*      - 建立函數			
+	*/
+	protected static function pathToArrayKey($path)
+    {
+		if (empty($path)) {
+			throw new exception ("路徑不允許空值");
+		}
+		$list = explode('/', preg_replace('%[/]{2,}%im', '/', $path));
+
+		$cmd = '';
+		foreach ($list as $keyName) {
+			if ($keyName === '') {
+				continue;
+			}
+			$cmd .= "['{$keyName}']";
+		};
+		return $cmd;
+    }
+	
+	protected static function valueSet (array &$list, $path, $value) 
+	{
+		$arrayKey = static::pathToArrayKey($path);
+		$cmd = '$list' . $arrayKey . ' = $value;';
+		eval ($cmd);
+	}
+
+	protected static function valueGet (array $list, $path, $defaultValue = null) 
+	{
+		$arrayKey = static::pathToArrayKey($path);
+		$data = '$list' . $arrayKey;
+		$value = $defaultValue;
+		$cmd = '$value = isset(' . $data . ') ? ' . $data . ' : $defaultValue;';
+		eval ($cmd);
+		return $value;
+	}
+	
+	public static function sessionEmpty($path)
+	{
+		$zendSessionKey = static::pathToZendSessionKey($path);
+		$sessionInstance = new Zend_Session_Namespace($zendSessionKey['namespace']);
+		$cmd = 'unset($sessionInstance' . $zendSessionKey['accessCmd'] . ');';
+		eval($cmd);
+	} 	
+	
+	
 	protected static function arrayToPath()
 	{
 		$list = [];

@@ -92,7 +92,7 @@ class webApplicationClass extends applicationAbstractClass
 	{
 		$keyName = 'route';
 		$matched = false;
-		static $webPageClass = 'm5D02F22739AA11E4B3C6005056847E34\pages\webPageClass';
+		static $webPageClass = 'm5D02F22739AA11E4B3C6005056847E34\pages\webPageAbstractClass';
 		foreach (self::$_staticParams[$keyName] as $urlPattern => &$info) {
 			if (!@preg_match($urlPattern, $_SERVER['REDIRECT_URL'], $matchs)) {
 				continue;
@@ -114,4 +114,10 @@ class webApplicationClass extends applicationAbstractClass
 			return $info['instance']->out();
 		}
 	}
+	
+    public static function host()
+	{
+		$protocol = 'http' . (isset($_SERVER['SSL'])? 's' : '');
+		return "{$protocol}://{$_SERVER['HTTP_HOST']}";
+	} 	
 }

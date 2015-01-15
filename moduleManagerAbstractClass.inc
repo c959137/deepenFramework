@@ -76,7 +76,7 @@ abstract class moduleManagerAbstractClass
 		$ns = static::nsJoin($classInfo['namespace'], $middleNs);
 		$fullClassName = $ns . '\\' . $className;
 		$moduleUid = static::moduleUid();
-		if (class_exists($fullClassName) || trait_exists($fullClassName)) {
+		if (class_exists($fullClassName) || trait_exists($fullClassName) || interface_exists($fullClassName)) {
 			self::$_staticParams[$keyName][$moduleUid][$fullClassName] = '';
 			return $fullClassName;
 		}
@@ -87,7 +87,7 @@ abstract class moduleManagerAbstractClass
 				throw new \exception("指定的檔案 [{$fn}] 不存在");
 			}
 			require $fn;
-			if (!(class_exists($fullClassName) || trait_exists($fullClassName))) {
+			if (!(class_exists($fullClassName) || trait_exists($fullClassName) || interface_exists($fullClassName))) {
 				throw new \exception("指定的類別 [{$fullClassName}] 不存在");
 			}
 			self::$_staticParams[$keyName][$moduleUid][$fullClassName] = [
