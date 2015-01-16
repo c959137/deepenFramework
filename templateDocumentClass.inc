@@ -2,7 +2,7 @@
 namespace m5D02F22739AA11E4B3C6005056847E34;
 class templateDocumentClass
 {
-	use propertysClass, instanceClass;
+	use traits\propertysClass, instanceClass;
 
 	const BLOCK_LIST_KEYNAME = 'blockList';
 	const LABEL_LIST_KEYNAME = 'labelList';

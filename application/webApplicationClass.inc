@@ -6,7 +6,7 @@ namespace m5D02F22739AA11E4B3C6005056847E34\application;
 */
 abstract class applicationAbstractClass 
 {
-	use \m5D02F22739AA11E4B3C6005056847E34\propertysClass;
+	use \m5D02F22739AA11E4B3C6005056847E34\traits\propertysClass;
 	
 	private static $_staticParams = [];
 	private $_instanceParams = [];
@@ -54,9 +54,16 @@ if (!isset($_SERVER['REDIRECT_URL'])) {
 
 class webApplicationClass extends applicationAbstractClass
 {
-	use \m5D02F22739AA11E4B3C6005056847E34\propertysClass;
+	use \m5D02F22739AA11E4B3C6005056847E34\traits\propertysClass;
 	private static $_staticParams = [];
-	private $_instanceParams = [];
+	private $_instanceParams = [
+		'propertys' => [
+			'matchs' => [
+				'get' => true,
+				'set' => false,
+			]
+		]
+	];
 
 	public static function applicationModuleClass()
 	{
@@ -110,7 +117,8 @@ class webApplicationClass extends applicationAbstractClass
 		}
 		if ($matched) {
 			$instance = static::instance();
-			$instance->_instanceParams['propertys']['matchs'] = $matchs;
+			//$instance->_instanceParams['propertys']['matchs'] = $matchs;
+			$instance->propertySet('matchs', $matchs);
 			return $info['instance']->out();
 		}
 	}

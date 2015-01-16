@@ -6,7 +6,7 @@
 
 namespace m5D02F22739AA11E4B3C6005056847E34;
 
-require 'propertysClass.inc';
+require 'traits/propertysClass.inc';
 require 'instanceClass.inc';
 require 'traits/arrayPathClass.inc';
 
@@ -15,7 +15,7 @@ require 'traits/arrayPathClass.inc';
 */
 class applicationFrameworkClass 
 {
-	use propertysClass, instanceClass;
+	use traits\propertysClass, instanceClass;
 	
 	const KEY_APPLICATION_UID = 'APPLICATION_UID';			///< 系統編號鍵值 
 	const KEY_RESOURCES_DATA = 'DATA_RESOURCES';			///< 資源目錄鍵值 

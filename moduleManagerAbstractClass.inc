@@ -3,7 +3,7 @@ namespace m5D02F22739AA11E4B3C6005056847E34;
 
 abstract class moduleManagerAbstractClass 
 {
-	use propertysClass, traits\arrayPathClass;
+	use traits\propertysClass, traits\arrayPathClass;
 	private static $_staticParams = [];
 	private $_instanceParams = [];
 	

@@ -10,7 +10,7 @@ namespace m5D02F22739AA11E4B3C6005056847E34\pages;
 */
 abstract class pageAbstractClass
 {
-	use \m5D02F22739AA11E4B3C6005056847E34\propertysClass;
+	use \m5D02F22739AA11E4B3C6005056847E34\traits\propertysClass;
 	/**
 	* @brief 建構式
 	* @use onCreate
