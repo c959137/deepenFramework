@@ -102,28 +102,40 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	*/
 	abstract protected function onOut();
 	
-	function queryValue(\m5D02F22739AA11E4B3C6005056847E34\templateDocumentClass $templateDocumentInstance, $path)
+	function queryValue(\m5D02F22739AA11E4B3C6005056847E34\templateDocumentClass $templateDocumentInstance, $path, &$rawData)
 	{
-		return $this->providerData($templateDocumentInstance, $path);
+		return $this->providerData($templateDocumentInstance, $path, $rawData);
 	}
 	
-	protected function providerRegister($path, $value)
+	protected function providerRegister($path, $value, $customContents = false)
 	{
-		static::valueSet($this->_instanceParams['provider'], $path, $value);
+		$keyName = static::pathToArrayKey($path);
+		$this->_instanceParams['provider'][$keyName] = [
+			'customContents' => $customContents, 
+			'value' => $value,
+		];
 	}
 	
-	protected function providerData(\m5D02F22739AA11E4B3C6005056847E34\templateDocumentClass $templateDocumentInstance, $path, $defaultValue = null)
+	protected function providerData(\m5D02F22739AA11E4B3C6005056847E34\templateDocumentClass $templateDocumentInstance, $path, &$rawData, $defaultValue = null)
 	{
-		echo $path, '<br/>';
-		$value = static::valueGet($this->_instanceParams['provider'], $path, null);
+		$keyName = static::pathToArrayKey($path);
+		if (!isset($this->_instanceParams['provider'][$keyName])) {
+			$rawData = null;
+			return false;
+		}
+		$info = $this->_instanceParams['provider'][$keyName];
+		$value = $info['value'];
+		//$value = static::valueGet($this->_instanceParams['provider'], $path, null);
 		if (is_array($value)) {
-			$value = call_user_func_array($value, [$templateDocumentInstance]);
+			$rawData = call_user_func_array($value, [$templateDocumentInstance]);
 		} else {
 			if (is_callable($value)) {
-				$value = call_user_func_array($value, [$templateDocumentInstance]);
+				$rawData = call_user_func_array($value, [$templateDocumentInstance]);
+			} else {
+				$rawData = $value;
 			}
 		};
-		return $value;
+		return $info['customContents'];
 	}
 	
 	protected function resourceRegister($url, array $attrs = [], $resourceType = \m5D02F22739AA11E4B3C6005056847E34\constants\resourceTypeConstantClass::RESOURCE_TYPE_JS)

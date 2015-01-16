@@ -160,21 +160,25 @@ class templateDocumentClass
 		$path = $this->path;
 		if ($labelList) {
 			foreach ($labelList as $labelName => $noUsed) {
-		if (defined('AAAAAAAAAA')) {
-			echo $path . $labelName, '<br/>';
-		}
-				$value = $templateDocumentProviderInstance->queryValue($this, $path . $labelName);
+				$templateDocumentProviderInstance->queryValue($this, $path . $labelName, $value);
 				if (is_null($value)) {
-					$value = $labelName;
+					$value = 'label=>' . $path . $labelName;
 				}
 				$content = preg_replace("/\(s:-{$labelName}-:\)/si", $value, $content);
 			}
 		}
 		if ($blockList) {
 			foreach ($blockList as $blockName => $blockInfo) {
-				$value = $templateDocumentProviderInstance->queryValue($blockInfo['instance'], $path . $blockName);
-				if (is_null($value)) {
-					$value = $blockName;
+				$value = '';
+				$customContent = $templateDocumentProviderInstance->queryValue($blockInfo['instance'], $path . $blockName, $value);
+				if (!$customContent) {
+					if (!is_null($value)) {
+						$blockInfo['instance']->loadContents($value);
+					}
+					$value = $blockInfo['instance']->out($templateDocumentProviderInstance);
+					if (is_null($value)) {
+						$value = 'block=>' . $blockName;
+					}
 				}
 				$content = preg_replace("/\(t:-{$blockInfo['blockUid']}-:\)/si", $value, $content);
 			}
