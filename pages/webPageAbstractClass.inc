@@ -3,36 +3,12 @@
 * @file  
 * 網頁類別
 */
-namespace m5D02F22739AA11E4B3C6005056847E34\constants;
-class resourceTypeConstantClass {
-	const RESOURCE_TYPE_CSS = 'css';
-	const RESOURCE_TYPE_JS = 'js';
-	private static $_staticParams = [
-		'resourceTypeList' => [
-			self::RESOURCE_TYPE_CSS => '',
-			self::RESOURCE_TYPE_JS => '',
-		]
-	];
-	private $_instanceParams = [];
-	
-	public static function resourceTypeChecker($constantName)
-	{
-		static::constantChecker('resourceTypeList', $constantName);
-	}
-	
-	protected static function constantChecker($staticArrayKeyName, $constantName)
-	{
-		if (!isset(self::$_staticParams[$staticArrayKeyName][$constantName])) {
-			$constantNotExistsExceptionClass = \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('constantNotExistsExceptionClass', 'exceptions');
-			throw new $constantNotExistsExceptionClass(__CLASS__ . '::' . $constantName);
-		}
-	}
-}
 
 
 namespace m5D02F22739AA11E4B3C6005056847E34\pages;
 \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('pageAbstractClass', 'pages');
 \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('templateDocumentProviderInterface');
+\m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('resourceTypeConstantClass', 'constants');
 
 /**
 * 網頁抽象類別
@@ -40,7 +16,7 @@ namespace m5D02F22739AA11E4B3C6005056847E34\pages;
 abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F22739AA11E4B3C6005056847E34\templateDocumentProviderInterface
 {
 	use \m5D02F22739AA11E4B3C6005056847E34\traits\arrayPathClass;
-
+	const SESSION_KEY_GAP = '::';
 	private static $_staticParams = [];
 	private $_instanceParams = [
 		'provider' => []
@@ -51,9 +27,18 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 		return \m5D02F22739AA11E4B3C6005056847E34\application\webApplicationClass::instance();
 	}
 	
-	protected function onCreate()
+	protected function applicationInstanceGet()
 	{
+		return static::applicationInstance();
 	}
+	
+	final protected function onCreate()
+	{
+		$this->onBeforeRequest();
+		$this->requestHandle();
+	}
+	
+	abstract protected function onBeforeRequest();
 	
 	protected function onDestroy()
 	{
@@ -79,7 +64,79 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 		$this->onBeforeOut();
 		return $this->onOut();
 	}
+	
+	final protected function requestHandle()
+	{
+		$applicationInstance = static::applicationInstance();
+		
+		$requestData = $this->requestDataProcessing($applicationInstance::requestData());
+		if (empty($requestData)) {
+			return ;
+		}
+		
+		if (!isset($requestData['work'])) {
+			return ;
+		}
+		$requestMethod = $this->requestMethod($requestData['work']);
+		if ($requestMethod) {
+			$responseData = call_user_func_array($requestMethod, [$requestData]);
+			xxx();
+		}
+	}
+	
+	/**
+	* @brief 進行 request 處理前先呼叫, 提供開發人員預先處理資料
+	* @use requestHandle
+	* @author nico chen 2015-01-17
+	* @version 0.00.01
+	* \b CHANGE \b HISTORY: <br>	 
+	*   <b>- nico chen / 2015-01-17</b>    
+	*      - 建立函數			
+	*/
+	protected function requestDataProcessing (array $requestData)
+	{
+		return $requestData;
+	}
+	
+	protected function  requestMethodRegister($requestName, $registerMethodInfo, array $methodModeList = [])
+	{
+		$keyName = __FUNCTION__;
+		if (!isset($this->_instanceParams[$keyName][$requestName])) {
+			if (!is_callable($registerMethodInfo)) {
+				$unEnforceableExceptionClass = \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('unEnforceableExceptionClass', 'exceptions');
+				throw new $unEnforceableExceptionClass($registerMethodInfo);
+			}
 
+			if (!empty($methodModeList)) {
+				$requestModeConstantClass = \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('requestModeConstantClass', 'constants');
+				$methodModeList2 = $methodModeList;
+				$methodModeList = [];
+				foreach ($methodModeList2 as $methodMode) {
+					$requestModeConstantClass::resourceTypeChecker($methodMode);
+					$methodModeList[$methodMode] = $methodMode;
+				}
+			}
+
+			$this->_instanceParams[$keyName][$requestName] = [
+				'registerMethodInfo' => $registerMethodInfo,
+				'methodModeList' => $methodModeList,
+			];
+		}
+	}
+	
+	protected function requestMethod($requestName)
+	{
+		$keyName = 'requestMethodRegister';
+		if (!isset($this->_instanceParams[$keyName][$requestName])) {
+			return null;
+		}
+		$requestInfo = $this->_instanceParams[$keyName][$requestName];
+		if (empty($requestInfo['methodModeList']) || (isset($requestInfo['methodModeList'][$_SERVER['REQUEST_METHOD']]))) {
+			return $requestInfo['registerMethodInfo'];
+		}
+		return null;
+	}
+	
 	/**
 	* @brief 頁面輸出前呼叫, 通常進行參數初始化或註冊
 	* @author nico chen 2015-01-15
@@ -209,5 +266,39 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 		}
 		return $html;
 	}
+
+	protected static function pageSessionKey()
+	{
+		$keyName = __FUNCTION__;
+		$className = get_called_class();
+		if (!isset(self::$_staticParams[$keyName][$className])) {
+			self::$_staticParams[$keyName][$className] = 'pages' . self::SESSION_KEY_GAP . $className;
+		}
+		return self::$_staticParams[$keyName][$className];
+	}
 	
+	protected function memberInstanceGet()
+	{
+		$keyName = static::propMethodNameToKeyName(__FUNCTION__);
+		if (!isset($this->_instanceParams[$keyName])) {
+			$this->_instanceParams[$keyName] = new \m5D02F22739AA11E4B3C6005056847E34\members\guestMemberClass();
+		}
+		return $this->_instanceParams[$keyName];
+	}
+}
+
+
+namespace m5D02F22739AA11E4B3C6005056847E34\members;
+class memberClass
+{
+	use	\m5D02F22739AA11E4B3C6005056847E34\traits\propertysClass;
+	
+}
+
+class guestMemberClass extends memberClass
+{
+	protected function userNameGet()
+	{
+		return '來賓';
+	}
 }

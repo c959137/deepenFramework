@@ -107,4 +107,9 @@ trait propertysClass
 		}
 		throw new \exception ("指定的屬性 [{$propName}] 不存在");
 	}
+	
+	protected static function propMethodNameToKeyName($propMethodName)
+	{
+		return preg_replace('/[G|S]et$/m', '', $propMethodName);
+	}
 }

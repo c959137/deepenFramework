@@ -25,7 +25,7 @@ trait arrayPathClass
 	protected static function pathToArrayKey($path)
     {
 		if (empty($path)) {
-			throw new exception ("路徑不允許空值");
+			throw new \exception ("路徑不允許空值");
 		}
 		$list = explode('/', preg_replace('%[/]{2,}%im', '/', $path));
 

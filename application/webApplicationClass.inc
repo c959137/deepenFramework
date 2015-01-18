@@ -1,38 +1,7 @@
 <?php
 namespace m5D02F22739AA11E4B3C6005056847E34\application;
-
-/**
-* @brief 應用類別
-*/
-abstract class applicationAbstractClass 
-{
-	use \m5D02F22739AA11E4B3C6005056847E34\traits\propertysClass;
-	
-	private static $_staticParams = [];
-	private $_instanceParams = [];
-
-	/**
-	* @brief 取得框架實體
-	* @return object 
-	*/
-	public static function instance()
-	{
-		$keyName = __FUNCTION__;
-		$className = get_called_class();
-		if (!isset(self::$_staticParams[$keyName][$className])) {
-			self::$_staticParams[$keyName][$className] = new $className();
-		}
-		return self::$_staticParams[$keyName][$className];
-	}
-}
-
-/**
-* @brief 命令列應用類別
-*/
-class consoleApplicationClass extends applicationAbstractClass
-{
-	
-}
+\m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('applicationAbstractClass', 'application');
+\m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('arrayPathClass', 'traits');
 
 /**
 * @brief 網頁列應用類別
@@ -48,13 +17,14 @@ REQUEST_URI 包含參數
 if (!isset($_SERVER['REDIRECT_URL'])) {
 	$info = parse_url($_SERVER['REQUEST_URI']);
 	if ($_SERVER['SCRIPT_NAME'] != $info['path']) {
-		$_SERVER['REDIRECT_URL'] = $info['path'];
+		$_SERVER['REDIRECT_URL'] = urldecode ($info['path']);
 	}
 };
 
 class webApplicationClass extends applicationAbstractClass
 {
 	use \m5D02F22739AA11E4B3C6005056847E34\traits\propertysClass;
+	use \m5D02F22739AA11E4B3C6005056847E34\traits\arrayPathClass;
 	private static $_staticParams = [];
 	private $_instanceParams = [
 		'propertys' => [
@@ -110,17 +80,25 @@ class webApplicationClass extends applicationAbstractClass
 				if (!is_subclass_of($fullClassName, $webPageClass)) {
 					throw new \exception('[' . $fullClassName . '] 必須繼承自 [' .  $webPageClass . ']');
 				}
+				$instance = static::instance();
+				$instance->propertySet('matchs', $matchs);
 				$info['instance'] = new $fullClassName();
 				$matched = true;
 				break;
 			}
 		}
 		if ($matched) {
-			$instance = static::instance();
-			//$instance->_instanceParams['propertys']['matchs'] = $matchs;
-			$instance->propertySet('matchs', $matchs);
 			return $info['instance']->out();
-		}
+		} else {
+			static::header404();
+		};
+	}
+	
+	public static function header404()
+	{
+		header_remove();
+		header('HTTP/1.1 404 Not Found');
+		die();
 	}
 	
     public static function host()
@@ -128,4 +106,49 @@ class webApplicationClass extends applicationAbstractClass
 		$protocol = 'http' . (isset($_SERVER['SSL'])? 's' : '');
 		return "{$protocol}://{$_SERVER['HTTP_HOST']}";
 	} 	
+	
+	public static function requestData()
+	{
+		switch ($_SERVER['REQUEST_METHOD']) {
+			case 'POST' :
+				return $_POST;
+				break;
+			
+			case 'GET' :
+				return $_GET;
+				break;
+			
+			default :
+				return $_REQUEST;
+				break;
+		}
+	}
+	
+	public static function sessionRead($sessionKeyName, $defaultValue = null)
+	{
+		if (session_id() == '') {
+			session_start();
+		}
+		return (isset($_SESSION[__CLASS__][$sessionKeyName])) ? $_SESSION[__CLASS__][$sessionKeyName] : $defaultValue;
+	}
+
+	public static function sessionWrite($sessionKeyName, $sessionValue)
+	{
+		if (session_id() == '') {
+			session_start();
+		}
+		$_SESSION[__CLASS__][$sessionKeyName] = $sessionValue;
+	}
+	
+	public static function sessionRemove($sessionKeyName = '')
+	{
+		if (session_id() == '') {
+			session_start();
+		}
+		if ($sessionKeyName == '') {
+			unset($_SESSION[__CLASS__]);
+		} else {
+			unset($_SESSION[__CLASS__][$sessionKeyName]);
+		};
+	}
 }
