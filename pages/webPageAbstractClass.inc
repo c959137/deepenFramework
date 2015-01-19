@@ -287,8 +287,43 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	}
 }
 
+namespace m5D02F22739AA11E4B3C6005056847E34\databases;
+class databaseManagerClass
+{
+	
+	public function connectionInstance($connectionType, $connectionInformation)
+	{
+		return m5D02F22739AA11E4B3C6005056847E34\databases\pdo\connectionClass();
+	}
+}
+
+class connectionAbstractClass {
+	
+}
+
+namespace m5D02F22739AA11E4B3C6005056847E34\databases\pdo;
+class connectionClass extends  \m5D02F22739AA11E4B3C6005056847E34\databases\connectionAbstractClass {
+	
+}
+
+
 
 namespace m5D02F22739AA11E4B3C6005056847E34\members;
+class memberManagerClass
+{
+	use	\m5D02F22739AA11E4B3C6005056847E34\traits\propertysClass;
+	
+	public static function memberInstanceByAccount($loginKeyUid)
+	{
+		
+	}
+	
+	public static function memberCreate($account)
+	{
+		
+	}
+}
+
 class memberClass
 {
 	use	\m5D02F22739AA11E4B3C6005056847E34\traits\propertysClass;
