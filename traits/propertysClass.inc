@@ -110,6 +110,6 @@ trait propertysClass
 	
 	protected static function propMethodNameToKeyName($propMethodName)
 	{
-		return preg_replace('/[G|S]et$/m', '', $propMethodName);
+		return preg_replace('/[G|S]et_?$/m', '', $propMethodName);
 	}
 }

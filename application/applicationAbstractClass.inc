@@ -23,4 +23,14 @@ abstract class applicationAbstractClass
 		}
 		return self::$_staticParams[$keyName][$className];
 	}
+
+	public static function applicationModuleClass()
+	{
+		$keyName = __FUNCTION__;
+		if (!isset(self::$_staticParams[$keyName])) {
+			self::$_staticParams[$keyName] = \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::moduleClassLoader(\m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::applicationUid());
+		}
+		return self::$_staticParams[$keyName];
+	}
+	
 }

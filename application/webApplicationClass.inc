@@ -35,15 +35,6 @@ class webApplicationClass extends applicationAbstractClass
 		]
 	];
 
-	public static function applicationModuleClass()
-	{
-		$keyName = __FUNCTION__;
-		if (!isset(self::$_staticParams[$keyName])) {
-			self::$_staticParams[$keyName] = \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::moduleClassLoader(\m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::applicationUid());
-		}
-		return self::$_staticParams[$keyName];
-	}
-	
 	public static function route($urlPattern, $className, $middleName)
 	{
 		//
@@ -150,5 +141,10 @@ class webApplicationClass extends applicationAbstractClass
 		} else {
 			unset($_SESSION[__CLASS__][$sessionKeyName]);
 		};
+	}
+	
+	public static function isAjax()
+	{
+		return (isset($_SERVER['HTTP_X_REQUESTED_WITH']));
 	}
 }
