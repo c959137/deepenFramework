@@ -79,9 +79,18 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 		}
 		$requestMethod = $this->requestMethod($requestData['work']);
 		if ($requestMethod) {
-			$responseData = call_user_func_array($requestMethod, [$requestData]);
-			xxx();
+			try {
+				$responseData = call_user_func_array($requestMethod, [$requestData]);
+				xxx();
+			} catch (\exception $exceptionInstance) {
+				$this->onExceptions($exceptionInstance);
+			}
 		}
+	}
+	
+	protected function onExceptions(\exception $exceptionInstance)
+	{
+		throw new $exceptionInstance;
 	}
 	
 	/**

@@ -44,13 +44,17 @@ trait propertysClass
 		if (method_exists($this, $methodName)) {
 			return $this->$methodName();
 		}
-		if (isset(self::$_staticParams['propertys'][$propName])) {
-			self::$_staticParams['propertys'][$propName] += ['get' => true, 'value' => ''];
-			return (self::$_staticParams['propertys'][$propName]['get']) ? self::$_staticParams['propertys'][$propName]['value'] : null;
+		if (isset(self::$_staticParams)) {
+			if (isset(self::$_staticParams['propertys'][$propName])) {
+				self::$_staticParams['propertys'][$propName] += ['get' => true, 'value' => ''];
+				return (self::$_staticParams['propertys'][$propName]['get']) ? self::$_staticParams['propertys'][$propName]['value'] : null;
+			}
 		}
-		if (isset($this->_instanceParams['propertys'][$propName])) {
-			$this->_instanceParams['propertys'][$propName] += ['get' => true, 'value' => ''];
-			return ($this->_instanceParams['propertys'][$propName]['get']) ? $this->_instanceParams['propertys'][$propName]['value'] : null;
+		if (isset($this->_instanceParams)) {
+			if (isset($this->_instanceParams['propertys'][$propName])) {
+				$this->_instanceParams['propertys'][$propName] += ['get' => true, 'value' => ''];
+				return ($this->_instanceParams['propertys'][$propName]['get']) ? $this->_instanceParams['propertys'][$propName]['value'] : null;
+			}
 		}
 		throw new \exception ("指定的屬性 [{$propName}] 不存在");
 	}
@@ -77,19 +81,24 @@ trait propertysClass
 		if (method_exists($this, $methodName)) {
 			return $this->$methodName($value);
 		}
-		if (isset(self::$_staticParams['propertys'][$propName])) {
-			self::$_staticParams['propertys'][$propName] += ['set' => true];
-			if (self::$_staticParams['propertys'][$propName]['set']) {
-				self::$_staticParams['propertys'][$propName]['value'] = $value;
+		if (isset(self::$_staticParams)) {
+			if (isset(self::$_staticParams['propertys'][$propName])) {
+				self::$_staticParams['propertys'][$propName] += ['set' => true];
+				if (self::$_staticParams['propertys'][$propName]['set']) {
+					self::$_staticParams['propertys'][$propName]['value'] = $value;
+				}
+				return;
 			}
-			return;
 		}
-		if (isset($this->_instanceParams['propertys'][$propName])) {
-			$this->_instanceParams['propertys'][$propName] += ['set' => true];
-			if ($this->_instanceParams['propertys'][$propName]['set']) {
-				$this->_instanceParams['propertys'][$propName]['value'] = $value;	
+
+		if (isset($this->_instanceParams)) {
+			if (isset($this->_instanceParams['propertys'][$propName])) {
+				$this->_instanceParams['propertys'][$propName] += ['set' => true];
+				if ($this->_instanceParams['propertys'][$propName]['set']) {
+					$this->_instanceParams['propertys'][$propName]['value'] = $value;	
+				}
+				return;
 			}
-			return;
 		}
 		
 		throw new \exception ("指定的屬性 [{$propName}] 不存在");
@@ -97,13 +106,17 @@ trait propertysClass
 	
 	protected function propertySet($propName, $value)
 	{
-		if (isset(self::$_staticParams['propertys'][$propName])) {
-			self::$_staticParams['propertys'][$propName]['value'] = $value;
-			return;
+		if (isset(self::$_staticParams)) {
+			if (isset(self::$_staticParams['propertys'][$propName])) {
+				self::$_staticParams['propertys'][$propName]['value'] = $value;
+				return;
+			}
 		}
-		if (isset($this->_instanceParams['propertys'][$propName])) {
-			$this->_instanceParams['propertys'][$propName]['value'] = $value;	
-			return;
+		if (isset($this->_instanceParams)) {
+			if (isset($this->_instanceParams['propertys'][$propName])) {
+				$this->_instanceParams['propertys'][$propName]['value'] = $value;	
+				return;
+			}
 		}
 		throw new \exception ("指定的屬性 [{$propName}] 不存在");
 	}
@@ -111,5 +124,20 @@ trait propertysClass
 	protected static function propMethodNameToKeyName($propMethodName)
 	{
 		return preg_replace('/[G|S]et_?$/m', '', $propMethodName);
+	}
+	
+	protected function propertyKeyList()
+	{
+		if (isset(self::$_staticParams)) {
+			if (isset(self::$_staticParams['propertys'])) {
+				return array_keys(self::$_staticParams['propertys']);
+			}
+		}
+		if (isset($this->_instanceParams)) {
+			if (isset($this->_instanceParams['propertys'])) {
+				return array_keys($this->_instanceParams['propertys']);
+			}
+		}
+		return null;
 	}
 }
