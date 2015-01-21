@@ -81,7 +81,10 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 		if ($requestMethod) {
 			try {
 				$responseData = call_user_func_array($requestMethod, [$requestData]);
+/*				
+				var_dump($responseData);
 				xxx();
+*/
 			} catch (\exception $exceptionInstance) {
 				$this->onExceptions($exceptionInstance);
 			}
@@ -284,65 +287,5 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 			self::$_staticParams[$keyName][$className] = 'pages' . self::SESSION_KEY_GAP . $className;
 		}
 		return self::$_staticParams[$keyName][$className];
-	}
-	
-	protected function memberInstanceGet()
-	{
-		$keyName = static::propMethodNameToKeyName(__FUNCTION__);
-		if (!isset($this->_instanceParams[$keyName])) {
-			$this->_instanceParams[$keyName] = new \m5D02F22739AA11E4B3C6005056847E34\members\guestMemberClass();
-		}
-		return $this->_instanceParams[$keyName];
-	}
-}
-
-namespace m5D02F22739AA11E4B3C6005056847E34\databases;
-class databaseManagerClass
-{
-	
-	public function connectionInstance($connectionType, $connectionInformation)
-	{
-		return m5D02F22739AA11E4B3C6005056847E34\databases\pdo\connectionClass();
-	}
-}
-
-class connectionAbstractClass {
-	
-}
-
-namespace m5D02F22739AA11E4B3C6005056847E34\databases\pdo;
-class connectionClass extends  \m5D02F22739AA11E4B3C6005056847E34\databases\connectionAbstractClass {
-	
-}
-
-
-
-namespace m5D02F22739AA11E4B3C6005056847E34\members;
-class memberManagerClass
-{
-	use	\m5D02F22739AA11E4B3C6005056847E34\traits\propertysClass;
-	
-	public static function memberInstanceByAccount($loginKeyUid)
-	{
-		
-	}
-	
-	public static function memberCreate($account)
-	{
-		
-	}
-}
-
-class memberClass
-{
-	use	\m5D02F22739AA11E4B3C6005056847E34\traits\propertysClass;
-	
-}
-
-class guestMemberClass extends memberClass
-{
-	protected function userNameGet()
-	{
-		return '來賓';
 	}
 }

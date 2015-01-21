@@ -101,7 +101,7 @@ trait propertysClass
 			}
 		}
 		
-		throw new \exception ("指定的屬性 [{$propName}] 不存在");
+		throw new \exception (__CLASS__ . " 指定的屬性 [{$propName}] 不存在");
 	}
 	
 	protected function propertySet($propName, $value)
@@ -118,7 +118,7 @@ trait propertysClass
 				return;
 			}
 		}
-		throw new \exception ("指定的屬性 [{$propName}] 不存在");
+		throw new \exception (__CLASS__ . " 指定的屬性 [{$propName}] 不存在");
 	}
 	
 	protected static function propMethodNameToKeyName($propMethodName)
