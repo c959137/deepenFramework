@@ -22,6 +22,9 @@ class applicationFrameworkClass
 	const KEY_RESOURCES_CONFIG = 'CONFIG_RESOURCES';		///< 設定目錄鍵值 
 	const KEY_RESOURCES_LOGGER = 'LOGGER_RESOURCES';		///< 紀錄目錄鍵值 
 	
+	CONST RUN_MODE_WEB = 'web';
+	CONST RUN_MODE_CONSOLE = 'console';
+	
 	private static $_staticParams = [];
 	
 	private $_instanceParams = [];
@@ -281,5 +284,19 @@ class applicationFrameworkClass
 			];
 		}
 		return self::$_staticParams[$keyName][$moduleUid]['className'];
+	}
+	
+	/**
+	* @brief 執行的模式
+	* @return string 
+	* @author nico chen 2015-01-22
+	* @version 0.00.01
+	* \b CHANGE \b HISTORY: <br>	 
+	*   <b>- nico chen / 2015-01-22</b>    
+	*      - 建立函數			
+	*/
+	public static function runMode()
+	{
+		return isset($_SERVER['SERVER_PROTOCOL']) ? self::RUN_MODE_WEB : self::RUN_MODE_CONSOLE;
 	}
 }

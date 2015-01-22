@@ -56,7 +56,7 @@ trait propertysClass
 				return ($this->_instanceParams['propertys'][$propName]['get']) ? $this->_instanceParams['propertys'][$propName]['value'] : null;
 			}
 		}
-		throw new \exception ("指定的屬性 [{$propName}] 不存在");
+		throw new \exception (__CLASS__ . " 指定的屬性 [{$propName}] 不存在");
 	}
 
 	/**
