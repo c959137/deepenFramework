@@ -299,4 +299,80 @@ class applicationFrameworkClass
 	{
 		return isset($_SERVER['SERVER_PROTOCOL']) ? self::RUN_MODE_WEB : self::RUN_MODE_CONSOLE;
 	}
+	
+	/**
+	* @brief 取得所有的模組編號設定
+	* @param string $path 
+	* @return string 
+	* @author nico chen 2015-01-23
+	* @version 0.00.01
+	* \b CHANGE \b HISTORY: <br>	 
+	*   <b>- nico chen / 2015-01-23</b>    
+	*      - 建立函數			
+	*/
+	protected static function modulePathList()
+	{
+		$keyName = __FUNCTION__;
+		if (!isset(self::$_staticParams[$keyName])) {
+			$list = [];
+			foreach ($_SERVER as $name => $value) {
+				if (strpos($name, 'MODULE_') === false) {
+					continue;
+				}
+				$list[substr($name, 7, 999)] = $value;
+			}
+			uasort($list, function($path1, $path2){
+				$len1 = strlen($path1);
+				$len2 = strlen($path2);
+				if ($len1 == $len2) {
+					return 0;
+				}
+				return $len1 < $len2;
+			});
+			self::$_staticParams[$keyName] = $list;
+		}
+		return self::$_staticParams[$keyName];
+	}
+	
+	/**
+	* @brief 取得某路徑所在的模組編號
+	* @param string $path 
+	* @return string 
+	* @author nico chen 2015-01-23
+	* @version 0.00.01
+	* \b CHANGE \b HISTORY: <br>	 
+	*   <b>- nico chen / 2015-01-23</b>    
+	*      - 建立函數			
+	*/
+	public static function moduleUidByPath($path)
+	{
+		$root = dirname($path);
+		$modulePathList = static::modulePathList();
+		foreach ($modulePathList as $moduleUid => $path) {
+			if (strpos($root, $path) === 0) {
+				return $moduleUid;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	* @brief 取得某路徑所在的模組類別
+	* @param string $path 
+	* @return string 
+	* @use moduleClassLoader
+	* @author nico chen 2015-01-23
+	* @version 0.00.01
+	* \b CHANGE \b HISTORY: <br>	 
+	*   <b>- nico chen / 2015-01-23</b>    
+	*      - 建立函數			
+	*/
+	public static function moduleClassLoaderByPath($path)
+	{
+		$moduleUid = static::moduleUidByPath($path);
+		if (empty($moduleUid)) {
+			throw new \exception("指定的路徑不在模組內");
+		}
+		return static::moduleClassLoader($moduleUid);
+	}
 }

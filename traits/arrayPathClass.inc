@@ -145,4 +145,34 @@ trait arrayPathClass
 		}
 		return $rootPath;
 	}
+	
+	protected static function nsToArray($ns)
+	{
+		return explode('\\', $ns);
+	}
+	
+	protected static function pathToNs($path, array $ns = [])
+	{
+		$root = dirname($path);
+		$moduleClass = \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::moduleClassLoaderByPath($root);
+		$modulePath = dirname($moduleClass::actualPath());
+		$rightPath = str_replace($modulePath, '', $root);
+		$list = explode('/', $rightPath);
+		$list2 = [];
+		reset($list);
+		while (true) {
+			$name = current($list);
+			if ($name === false) {
+				break;
+			}
+			if ($name != '') {
+				$list2[] = $name;
+			}
+			next($list);
+		};
+		foreach ($ns as $value) {
+			$list2[] = $value;
+		}
+		return implode('\\', $list2);
+	}
 }

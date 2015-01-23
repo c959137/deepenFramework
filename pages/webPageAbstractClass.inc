@@ -279,12 +279,22 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 		return $html;
 	}
 
+	protected static function pageRootSessionKey()
+	{
+		$keyName = __FUNCTION__;
+		$className = get_called_class();
+		if (!isset(self::$_staticParams[$keyName][$className])) {
+			self::$_staticParams[$keyName][$className] = 'pages';
+		}
+		return self::$_staticParams[$keyName][$className];
+	}
+
 	protected static function pageSessionKey()
 	{
 		$keyName = __FUNCTION__;
 		$className = get_called_class();
 		if (!isset(self::$_staticParams[$keyName][$className])) {
-			self::$_staticParams[$keyName][$className] = 'pages' . self::SESSION_KEY_GAP . $className;
+			self::$_staticParams[$keyName][$className] = static::pageRootSessionKey() . self::SESSION_KEY_GAP . $className;
 		}
 		return self::$_staticParams[$keyName][$className];
 	}
