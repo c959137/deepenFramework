@@ -19,7 +19,6 @@ abstract class connectionAbstractClass {
 		try {
 			return $this->doQuery($sqlScript);
 		} catch (\m5D02F22739AA11E4B3C6005056847E34\databases\exceptions\exceptionClass $exceptionInstance) {
-xxx();
 			throw $exceptionInstance;
 		} catch (\exception $exceptionInstance) {
 			var_dump($exceptionInstance);

@@ -29,8 +29,7 @@ class connectionClass extends  \m5D02F22739AA11E4B3C6005056847E34\databases\conn
 			} else {
 				throw new \m5D02F22739AA11E4B3C6005056847E34\databases\exceptions\queryExceptionClass($sqlScript);
 			};
-		} catch (\PDOStatement $exceptionInstance) {
-xxx();
+		} catch (\PDOException $exceptionInstance) {
 			throw new \m5D02F22739AA11E4B3C6005056847E34\databases\exceptions\queryExceptionClass($sqlScript, $exceptionInstance);
 		} catch (\exception $exceptionInstance) {
 			throw $exceptionInstance;

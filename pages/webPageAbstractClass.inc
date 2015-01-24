@@ -34,11 +34,26 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	
 	final protected function onCreate()
 	{
-		$this->onBeforeRequest();
-		$this->requestHandle();
+		try {
+			$this->onBeforeRequest();
+			$this->requestHandle();
+		} catch (\exception $exceptionInstance) {
+			$this->onExceptions($exceptionInstance);			
+		}
 	}
 	
-	abstract protected function onBeforeRequest();
+	/**
+	* @brief 處理 request 動作前
+	* @author nico chen 2015-01-23
+	* @use onCreate
+	* @version 0.00.01
+	* \b CHANGE \b HISTORY: <br>	 
+	*   <b>- nico chen / 2015-01-23</b>    
+	*      - 建立函數			
+	*/
+	protected function onBeforeRequest(){
+		
+	}
 	
 	protected function onDestroy()
 	{
@@ -58,13 +73,23 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 		$this->providerRegister('/webSite', [$this, 'webSiteGet']);							// 網域
 		$this->providerRegister('/pageTitle', [$this, 'pageTitleGet']);						// 頁面抬頭
 		
-		$this->providerRegister('/jsList', [$this, 'jsList']);						// 頁面抬頭
-		$this->providerRegister('/cssList', [$this, 'cssList']);						// 頁面抬頭
+		$this->providerRegister('/metaList', [$this, 'metaListArea']);						// meta
+		$this->providerRegister('/jsList', [$this, 'jsListArea']);							// js
+		$this->providerRegister('/cssList', [$this, 'cssListArea']);						// css
 
 		$this->onBeforeOut();
 		return $this->onOut();
 	}
 	
+	/**
+	* @brief 處理 request
+	* @author nico chen 2015-01-23
+	* @use onCreate
+	* @version 0.00.01
+	* \b CHANGE \b HISTORY: <br>	 
+	*   <b>- nico chen / 2015-01-23</b>    
+	*      - 建立函數			
+	*/
 	final protected function requestHandle()
 	{
 		$applicationInstance = static::applicationInstance();
@@ -91,9 +116,28 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 		}
 	}
 	
+	/**
+	* @brief 發生例外時的事件
+	* @author nico chen 2015-01-23
+	* @use onCreate
+	* @version 0.00.01
+	* \b CHANGE \b HISTORY: <br>	 
+	*   <b>- nico chen / 2015-01-23</b>    
+	*      - 建立函數			
+	*/
 	protected function onExceptions(\exception $exceptionInstance)
-	{
-		throw new $exceptionInstance;
+	{	
+		if ($exceptionInstance instanceof \m5D02F22739AA11E4B3C6005056847E34\databases\exceptions\queryExceptionClass) {
+			showScript($exceptionInstance->sqlScript);
+			echo $exceptionInstance->getMessage(), '<br/>';
+		} else {
+			var_dump($exceptionInstance);
+		};
+		
+		echo "file => {$exceptionInstance->getFile()}<br/>";
+		echo "line => {$exceptionInstance->getLine()}<br/>";
+		xxx();
+		throw $exceptionInstance;
 	}
 	
 	/**
@@ -246,7 +290,30 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 		return '預設頁面';
 	}
 	
-	protected function jsList()
+	/**
+	* @brief 匯出 meta 資料
+	* @return string 
+	* @author nico chen 2015-01-24
+	* @version 0.00.01
+	* \b CHANGE \b HISTORY: <br>	 
+	*   <b>- nico chen / 2015-01-24</b>    
+	*      - 建立函數			
+	*/
+	protected function metaListArea()
+	{	
+		return '';
+	}
+
+	/**
+	* @brief 匯出 javascript 資料
+	* @return string 
+	* @author nico chen 2015-01-24
+	* @version 0.00.01
+	* \b CHANGE \b HISTORY: <br>	 
+	*   <b>- nico chen / 2015-01-24</b>    
+	*      - 建立函數			
+	*/
+	protected function jsListArea()
 	{	
 		$keyName = 'resourceRegister';
 		$resourceType = \m5D02F22739AA11E4B3C6005056847E34\constants\resourceTypeConstantClass::RESOURCE_TYPE_JS;
@@ -262,7 +329,17 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 		}
 		return $html;
 	}
-	protected function cssList()
+
+	/**
+	* @brief 匯出 css 資料
+	* @return string 
+	* @author nico chen 2015-01-24
+	* @version 0.00.01
+	* \b CHANGE \b HISTORY: <br>	 
+	*   <b>- nico chen / 2015-01-24</b>    
+	*      - 建立函數			
+	*/
+	protected function cssListArea()
 	{
 		$keyName = 'resourceRegister';
 		$resourceType = \m5D02F22739AA11E4B3C6005056847E34\constants\resourceTypeConstantClass::RESOURCE_TYPE_CSS;
