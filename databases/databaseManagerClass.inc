@@ -143,6 +143,8 @@ abstract class recordsetAbstractClass
 		return $this->doFetchRow();
 	}
 	abstract protected function doFetchRow();
+	
+	abstract protected function recordCountGet();
 }
 
 namespace m5D02F22739AA11E4B3C6005056847E34\databases\pdo;
@@ -174,6 +176,10 @@ class recordsetClass extends \m5D02F22739AA11E4B3C6005056847E34\databases\record
 		$statementInstance = $this->statementInstance;
 		$this->propertySet('rowData', $statementInstance->fetch());
 		return $this->rowData;
+	}
+	
+	protected function recordCountGet(){
+		return $this->statementInstance->rowCount();
 	}
 }
 
