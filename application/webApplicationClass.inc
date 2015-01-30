@@ -98,6 +98,15 @@ class webApplicationClass extends applicationAbstractClass
 		return "{$protocol}://{$_SERVER['HTTP_HOST']}";
 	} 	
 	
+    public static function url()
+	{
+		$keyName = __FUNCTION__;
+		if (!isset(self::$_staticParams[$keyName])) {
+			self::$_staticParams[$keyName] = static::host() . urldecode($_SERVER['REQUEST_URI']);
+		}
+		return self::$_staticParams[$keyName];
+	} 	
+
 	public static function requestData()
 	{
 		switch ($_SERVER['REQUEST_METHOD']) {
