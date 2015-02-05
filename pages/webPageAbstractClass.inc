@@ -9,6 +9,7 @@ namespace m5D02F22739AA11E4B3C6005056847E34\pages;
 \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('pageAbstractClass', 'pages');
 \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('templateDocumentProviderInterface');
 \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('resourceTypeConstantClass', 'constants');
+\m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('templateDocumentProviderModeConstantClass', 'constants');
 
 /**
 * 網頁抽象類別
@@ -215,7 +216,7 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	*/
 	abstract protected function onOut();
 	
-	function queryValue(\m5D02F22739AA11E4B3C6005056847E34\templateDocumentClass $templateDocumentInstance, $path, &$rawData)
+	function queryValue(\m5D02F22739AA11E4B3C6005056847E34\templateDocumentClass $templateDocumentInstance, $providerMode , $path, &$rawData)
 	{
 		return $this->providerData($templateDocumentInstance, $path, $rawData);
 	}

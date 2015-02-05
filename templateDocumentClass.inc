@@ -1,5 +1,6 @@
 <?php
 namespace m5D02F22739AA11E4B3C6005056847E34;
+\m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('templateDocumentProviderModeConstantClass', 'constants');
 class templateDocumentClass
 {
 	use traits\propertysClass, instanceClass;
@@ -160,7 +161,7 @@ class templateDocumentClass
 		$path = $this->path;
 		if ($labelList) {
 			foreach ($labelList as $labelName => $noUsed) {
-				$templateDocumentProviderInstance->queryValue($this, $path . $labelName, $value);
+				$templateDocumentProviderInstance->queryValue($this, \m5D02F22739AA11E4B3C6005056847E34\constants\templateDocumentProviderModeConstantClass::MODE_LABEL, $path . $labelName, $value);
 				if (is_null($value)) {
 					$value = 'label=>' . $path . $labelName;
 				}
@@ -170,7 +171,7 @@ class templateDocumentClass
 		if ($blockList) {
 			foreach ($blockList as $blockName => $blockInfo) {
 				$value = '';
-				$customContent = $templateDocumentProviderInstance->queryValue($blockInfo['instance'], $path . $blockName, $value);
+				$customContent = $templateDocumentProviderInstance->queryValue($blockInfo['instance'], \m5D02F22739AA11E4B3C6005056847E34\constants\templateDocumentProviderModeConstantClass::MODE_BLOCK, $path . $blockName, $value);
 				if (!$customContent) {
 					if (!is_null($value)) {
 						$blockInfo['instance']->loadContents($value);
