@@ -71,15 +71,20 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	*/
 	public function out()
 	{	
-		$this->providerRegister('/webSite', [$this, 'webSiteGet']);							// 網域
-		$this->providerRegister('/pageTitle', [$this, 'pageTitleGet']);						// 頁面抬頭
-		
-		$this->providerRegister('/metaList', [$this, 'metaListArea']);						// meta
-		$this->providerRegister('/jsList', [$this, 'jsListArea']);							// js
-		$this->providerRegister('/cssList', [$this, 'cssListArea']);						// css
-
-		$this->onBeforeOut();
-		return $this->onOut();
+		try {
+			$this->providerRegister('/webSite', [$this, 'webSiteGet']);							// 網域
+			$this->providerRegister('/pageTitle', [$this, 'pageTitleGet']);						// 頁面抬頭
+			
+			$this->providerRegister('/metaList', [$this, 'metaListArea']);						// meta
+			$this->providerRegister('/jsList', [$this, 'jsListArea']);							// js
+			$this->providerRegister('/cssList', [$this, 'cssListArea']);						// css
+			$this->onBeforeOut();
+			$pageContent = $this->onOut();
+			echo $pageContent;
+		} catch (\exception $exceptionInstance) {
+			$this->onExceptions($exceptionInstance, true);			
+			xxx();
+		}
 	}
 	
 	/**
@@ -119,6 +124,8 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	
 	/**
 	* @brief 發生例外時的事件
+	* @param \exception $exceptionInstance 例外實體
+	* @param boolean $onOutThrow 是不是在執行 onOut 時發生例外
 	* @author nico chen 2015-01-23
 	* @use onCreate
 	* @version 0.00.01
@@ -126,7 +133,7 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	*   <b>- nico chen / 2015-01-23</b>    
 	*      - 建立函數			
 	*/
-	protected function onExceptions(\exception $exceptionInstance)
+	protected function onExceptions(\exception $exceptionInstance, $onOutThrow = false)
 	{	
 		if ($exceptionInstance instanceof \m5D02F22739AA11E4B3C6005056847E34\databases\exceptions\queryExceptionClass) {
 			showScript($exceptionInstance->sqlScript);
