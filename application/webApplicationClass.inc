@@ -73,7 +73,9 @@ class webApplicationClass extends applicationAbstractClass
 				}
 				$instance = static::instance();
 				$instance->propertySet('matchs', $matchs);
-				$info['instance'] = new $fullClassName();
+				//$info['instance'] = new $fullClassName();
+				$info['instance'] = $fullClassName::instance();
+				self::$_staticParams['activePageInstance'] = $info['instance'];
 				$matched = true;
 				break;
 			}
@@ -155,5 +157,11 @@ class webApplicationClass extends applicationAbstractClass
 	public static function isAjax()
 	{
 		return (isset($_SERVER['HTTP_X_REQUESTED_WITH']));
+	}
+	
+	public static function activePageInstance()
+	{
+		$keyName = __FUNCTION__;
+		return isset(self::$_staticParams[$keyName]) ? self::$_staticParams[$keyName] : null;
 	}
 }

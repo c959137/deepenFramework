@@ -11,6 +11,9 @@ namespace m5D02F22739AA11E4B3C6005056847E34\pages;
 abstract class pageAbstractClass
 {
 	use \m5D02F22739AA11E4B3C6005056847E34\traits\propertysClass;
+	private static $_staticParams = [];
+	private $_instanceParams = [];
+
 	/**
 	* @brief 建構式
 	* @use onCreate
@@ -39,6 +42,16 @@ abstract class pageAbstractClass
 	{
 		$this->onDestroy();
 	}
+	
 	abstract protected function onDestroy();
+	
+	public static function instance()
+	{
+		$className = get_called_class();
+		if (!isset(self::$_staticParams[$className])) {
+			self::$_staticParams[$className] = new $className();
+		}
+		return self::$_staticParams[$className];
+	}
 }
 
