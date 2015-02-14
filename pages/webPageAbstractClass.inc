@@ -37,7 +37,12 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	{
 		try {
 			$this->onBeforeRequest();
-			$this->requestHandle();
+			$requestData = $this->requestHandle();
+			$applicationInstance = $this->applicationInstance;
+			if ($applicationInstance::isAjax()) {
+				echo json_encode($requestData);
+				die();
+			}
 		} catch (\exception $exceptionInstance) {
 			$this->onExceptions($exceptionInstance);			
 		}
@@ -105,6 +110,10 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 			return ;
 		}
 		
+		if (!isset($requestData['work']) && isset($_GET['work'])) {
+			$requestData['work'] = $_GET['work'];
+		}
+
 		if (!isset($requestData['work'])) {
 			return ;
 		}
@@ -112,10 +121,7 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 		if ($requestMethod) {
 			try {
 				$responseData = call_user_func_array($requestMethod, [$requestData]);
-/*				
-				var_dump($responseData);
-				xxx();
-*/
+				return $responseData;
 			} catch (\exception $exceptionInstance) {
 				$this->onExceptions($exceptionInstance);
 			}
