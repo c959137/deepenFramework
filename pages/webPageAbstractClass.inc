@@ -106,12 +106,12 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 		$applicationInstance = static::applicationInstance();
 		
 		$requestData = $this->requestDataProcessing($applicationInstance::requestData());
-		if (empty($requestData)) {
-			return ;
-		}
-		
 		if (!isset($requestData['work']) && isset($_GET['work'])) {
 			$requestData['work'] = $_GET['work'];
+		}
+
+		if (empty($requestData)) {
+			return ;
 		}
 
 		if (!isset($requestData['work'])) {
