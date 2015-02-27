@@ -125,7 +125,9 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 			} catch (\exception $exceptionInstance) {
 				$this->onExceptions($exceptionInstance);
 			}
-		}
+		} else {
+			throw new \exception('功能 [' . $requestData['work'] . '] 尚未註冊');
+		};
 	}
 	
 	/**
