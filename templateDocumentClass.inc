@@ -15,6 +15,10 @@ class templateDocumentClass
 				'get' => true,
 				'set' => false,
 			],
+			'fileName' => [
+				'get' => true,
+				'set' => false,
+			],
 			'blockName' => [
 				'get' => true,
 				'set' => false,
@@ -50,6 +54,7 @@ class templateDocumentClass
 		if (!file_exists($file)) {
 			throw new exception("指定的檔案 [{$file}] 不存在");
 		}
+		$this->propertySet('fileName', $file);
 		return $this->loadContents(file_get_contents($file));
 	}
 	
@@ -159,6 +164,7 @@ class templateDocumentClass
 		$blockList = &$this->_instanceParams[self::BLOCK_LIST_KEYNAME];
 		$labelList = &$this->_instanceParams[self::LABEL_LIST_KEYNAME];
 		$path = $this->path;
+		$fileName = $this->fileName;
 		if ($labelList) {
 			foreach ($labelList as $labelName => $noUsed) {
 				$templateDocumentProviderInstance->queryValue($this, \m5D02F22739AA11E4B3C6005056847E34\constants\templateDocumentProviderModeConstantClass::MODE_LABEL, $path . $labelName, $value);
@@ -170,22 +176,25 @@ class templateDocumentClass
 		}
 		if ($blockList) {
 			foreach ($blockList as $blockName => $blockInfo) {
-				$value = '';
+				$value = null;
 				$customContent = $templateDocumentProviderInstance->queryValue($blockInfo['instance'], \m5D02F22739AA11E4B3C6005056847E34\constants\templateDocumentProviderModeConstantClass::MODE_BLOCK, $path . $blockName, $value);
-				if (!$customContent) {
-					if (!is_null($value)) {
+				if (!is_null($value)) {
+					if (!$customContent) {
 						$blockInfo['instance']->loadContents($value);
+						$value = $blockInfo['instance']->out($templateDocumentProviderInstance);
 					}
-					$value = $blockInfo['instance']->out($templateDocumentProviderInstance);
-					if (is_null($value)) {
-						$value = 'block=>' . $blockName;
-					}
+				}
+				if (is_null($value)) {
+					$data = "樣板名稱 : {$fileName}<br/>";
+					$data .= "路徑名稱 : {$path}<br/>";
+					$data .= "區塊名稱 : {$blockName}<br/>";
+					$id = '_' . uuid();
+					$value = '<a id="' . $id . '" class="registeringWarning" style="display:none; color:red" title="test!!">&#2993;</a>';
+					$value .= '<a id="' . $id . '_data" style="display:none">' . $data . '</a>';
 				}
 				$content = preg_replace("/\(t:-{$blockInfo['blockUid']}-:\)/si", $value, $content);
 			}
 		}
-		
-		
 		return $content;
 	}
 }
