@@ -53,6 +53,12 @@ function uuid($longCode = false)
   return strtoupper ($uuid);
 }
 
+function uuidNull($longCode = false)
+{
+	static $data = '00000000-0000-0000-0000-000000000000';
+	return $longCode ? $data : str_replace('-', '', $data);
+}
+
 function showScript($script)
 {
 	$runMode = m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::runMode();
