@@ -391,4 +391,18 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 		}
 		return self::$_staticParams[$keyName][$className];
 	}
+	
+	/**
+	* @brief 顯示所有註冊的套版資料列表
+	* @return string 
+	* @author nico chen 2015-01-24
+	* @version 0.00.01
+	* \b CHANGE \b HISTORY: <br>	 
+	*   <b>- nico chen / 2015-01-24</b>    
+	*      - 建立函數			
+	*/
+	public static function providerShow(webPageAbstractClass $pageInstance)
+	{
+		var_dump($pageInstance->_instanceParams['provider']);
+	}
 }
