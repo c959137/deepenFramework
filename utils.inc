@@ -53,8 +53,13 @@ function uuid($longCode = false)
   return strtoupper ($uuid);
 }
 
+if (!defined('UUID_NULL')) {
+	define('UUID_NULL', '00000000000000000000000000000000');
+	define('UUID_NULL_LONG', '00000000-0000-0000-0000-000000000000');
+};
 function uuidNull($longCode = false)
 {
+	return $longCode ? UUID_NULL_LONG : UUID_NULL;
 	static $data = '00000000-0000-0000-0000-000000000000';
 	return $longCode ? $data : str_replace('-', '', $data);
 }
