@@ -23,6 +23,20 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 		'provider' => []
 	];
 
+	/**
+	* @brief 建構式
+	* @use onCreate
+	* @author nico chen 2015-03-05
+	* @version 0.00.01
+	* \b CHANGE \b HISTORY: <br>	 
+	*   <b>- nico chen / 2015-03-05</b>    
+	*      - 建立函數			
+	*/
+	public function __construct ()
+	{
+		$this->onCreate();
+	}
+
 	public static function applicationInstance()
 	{
 		return \m5D02F22739AA11E4B3C6005056847E34\application\webApplicationClass::instance();
@@ -35,16 +49,19 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	
 	final protected function onCreate()
 	{
-		try {
-			$this->onBeforeRequest();
-			$requestData = $this->requestHandle();
-			$applicationInstance = $this->applicationInstance;
-			if ($applicationInstance::isAjax()) {
-				echo json_encode($requestData);
-				die();
+		$webApplicationClass = \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('webApplicationClass', 'application');
+		if ($webApplicationClass::isActivePageInstance($this)) {
+			try {
+				$this->onBeforeRequest();
+				$requestData = $this->requestHandle();
+				$applicationInstance = $this->applicationInstance;
+				if ($applicationInstance::isAjax()) {
+					echo json_encode($requestData);
+					die();
+				}
+			} catch (\exception $exceptionInstance) {
+				$this->onExceptions($exceptionInstance);			
 			}
-		} catch (\exception $exceptionInstance) {
-			$this->onExceptions($exceptionInstance);			
 		}
 	}
 	
@@ -404,5 +421,14 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	public static function providerShow(webPageAbstractClass $pageInstance)
 	{
 		var_dump($pageInstance->_instanceParams['provider']);
+	}
+	
+	public static function instance()
+	{
+		$className = get_called_class();
+		if (!isset(self::$_staticParams[$className])) {
+			self::$_staticParams[$className] = new $className();
+		}
+		return self::$_staticParams[$className];
 	}
 }

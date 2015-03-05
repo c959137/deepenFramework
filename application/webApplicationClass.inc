@@ -53,6 +53,7 @@ class webApplicationClass extends applicationAbstractClass
 			'className' => $className,
 			'middleName' => $middleName,
 			'instance' => null,
+			'fullClassName' => '',
 		];
 	}
 	
@@ -68,14 +69,15 @@ class webApplicationClass extends applicationAbstractClass
 			if (empty($info['instance'])) {
 				$applicationModuleClass = static::applicationModuleClass();
 				$fullClassName = $applicationModuleClass::classLoader($info['className'], $info['middleName']);
+				$info['fullClassName'] = $fullClassName;
 				if (!is_subclass_of($fullClassName, $webPageClass)) {
 					throw new \exception('[' . $fullClassName . '] 必須繼承自 [' .  $webPageClass . ']');
 				}
 				$instance = static::instance();
 				$instance->propertySet('matchs', $matchs);
-				//$info['instance'] = new $fullClassName();
-				$info['instance'] = $fullClassName::instance();
-				self::$_staticParams['activePageInstance'] = $info['instance'];
+				
+				self::$_staticParams['activeInfo'] = &$info;
+				$info['instance'] = $fullClassName::instance(true);
 				$matched = true;
 				break;
 			}
@@ -163,5 +165,11 @@ class webApplicationClass extends applicationAbstractClass
 	{
 		$keyName = __FUNCTION__;
 		return isset(self::$_staticParams[$keyName]) ? self::$_staticParams[$keyName] : null;
+	}
+
+	public static function isActivePageInstance(\m5D02F22739AA11E4B3C6005056847E34\pages\webPageAbstractClass $webPageInstance)
+	{
+		$keyName = 'activeInfo';
+		return $webPageInstance instanceof self::$_staticParams[$keyName]['fullClassName'];
 	}
 }
