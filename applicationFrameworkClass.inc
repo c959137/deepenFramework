@@ -270,7 +270,7 @@ class applicationFrameworkClass
 			}
 			$fn = $rootPath . 'moduleManagerClass.inc';
 			if (!file_exists($fn)) {
-				throw new \exception("指定的模組檔案 不存在");
+				throw new \exception("指定的模組管理檔案  {$moduleUid} - moduleManagerClass.inc 不存在");
 			}
 			require $fn;
 			
