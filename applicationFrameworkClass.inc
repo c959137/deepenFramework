@@ -119,7 +119,12 @@ class applicationFrameworkClass
 		}
 		$path = static::$_staticParams['resources'][$resourceKey];
 		if (!empty($dirList)) {
-			$path .= implode(DIRECTORY_SEPARATOR, $dirList);
+			foreach ($dirList as $subPath) {
+				if (!$subPath) {
+					continue;
+				}
+				$path .= $subPath . DIRECTORY_SEPARATOR; 
+			}
 		}
 		static::pathChecker($path, true);
 		return $path;
@@ -216,7 +221,7 @@ class applicationFrameworkClass
 		}
 		
 		$umask = umask(0002);
-		$flag = @mkdir($path, 0774, true);
+		$flag = @mkdir($path, 0775, true);
 		umask($umask);
 		/*
 		0664 => drw-r--r--
