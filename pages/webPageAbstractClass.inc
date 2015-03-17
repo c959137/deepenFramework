@@ -354,15 +354,40 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 			return '';
 		}
 		$html = '';
-		foreach ($this->_instanceParams[$keyName][$resourceType] as $url => $noUsed) {
+		foreach ($this->_instanceParams[$keyName][$resourceType] as $url => $attrs) {
 			if ($html != '') {
 				$html .= "\n";
 			}
-			$html .= "<script type='text/javascript' src='{$url}'></script>";
+			$html .= static::blockContent('link', $attrs + ['type' => 'text/javascript', 'src' => $url]);
 		}
 		return $html;
 	}
 
+	/**
+	* @brief 產生 html
+	* @param string $tagName 標籤名稱
+	* @param boolean $pair true: 一對標籤, false: 單標籤
+	* @param mixed $attrs 屬性列表
+	* @param string $content 內容
+	* @return string 
+	* @author nico chen 2015-03-17
+	* @version 0.00.01
+	* \b CHANGE \b HISTORY: <br>	 
+	*   <b>- nico chen / 2015-03-17</b>    
+	*      - 建立函數			
+	*/
+	protected static function blockContent($tagName, $attrs = [], $pair = true, $content = '') {
+		$attrStr = '';
+		foreach ($attrs as $name => $value) {
+			if ($attrStr!= '') {
+				$attrStr .= ' ';
+			}
+			$attrStr .= $name . '="' .  $value . '"';
+		}
+		return "<{$tagName} {$attrStr}>{$content}</{$tagName}>";
+	}
+	
+	
 	/**
 	* @brief 匯出 css 資料
 	* @return string 
@@ -380,11 +405,11 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 			return '';
 		}
 		$html = '';
-		foreach ($this->_instanceParams[$keyName][$resourceType] as $url => $noUsed) {
+		foreach ($this->_instanceParams[$keyName][$resourceType] as $url => $attrs) {
 			if ($html != '') {
 				$html .= "\n";
 			}
-			$html .= "<link rel='stylesheet' type='text/css' href='{$url}'>";
+			$html .= static::blockContent('link', $attrs + ['rel' => 'stylesheet', 'type' => 'text/css', 'href' => $url], false);
 		}
 		return $html;
 	}
