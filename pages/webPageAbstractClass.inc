@@ -358,7 +358,7 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 			if ($html != '') {
 				$html .= "\n";
 			}
-			$html .= static::blockContent('link', $attrs + ['type' => 'text/javascript', 'src' => $url]);
+			$html .= static::blockContent('script', $attrs + ['type' => 'text/javascript', 'src' => $url]);
 		}
 		return $html;
 	}
@@ -384,7 +384,11 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 			}
 			$attrStr .= $name . '="' .  $value . '"';
 		}
-		return "<{$tagName} {$attrStr}>{$content}</{$tagName}>";
+		$html = "<{$tagName} {$attrStr}>";
+		if ($pair) {
+			$html .= "{$content}</{$tagName}>";
+		}
+		return $html;
 	}
 	
 	
@@ -409,7 +413,7 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 			if ($html != '') {
 				$html .= "\n";
 			}
-			$html .= static::blockContent('link', $attrs + ['rel' => 'stylesheet', 'type' => 'text/css', 'href' => $url], false);
+			$html .= static::blockContent('link', $attrs + ['href' => $url, 'rel' => 'stylesheet', ], false);
 		}
 		return $html;
 	}
