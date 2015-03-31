@@ -17,10 +17,11 @@ class applicationFrameworkClass
 {
 	use traits\propertysClass, instanceClass;
 	
-	const KEY_APPLICATION_UID = 'APPLICATION_UID';			///< 系統編號鍵值 
-	const KEY_RESOURCES_DATA = 'DATA_RESOURCES';			///< 資源目錄鍵值 
-	const KEY_RESOURCES_CONFIG = 'CONFIG_RESOURCES';		///< 設定目錄鍵值 
-	const KEY_RESOURCES_LOGGER = 'LOGGER_RESOURCES';		///< 紀錄目錄鍵值 
+	const KEY_APPLICATION_UID = 'APPLICATION_UID';				///< 系統編號鍵值 
+	const KEY_RESOURCES_DATA = 'DATA_RESOURCES';				///< 資源目錄鍵值 
+	const KEY_RESOURCES_CONFIG = 'CONFIG_RESOURCES';			///< 設定目錄鍵值 
+	const KEY_RESOURCES_LOGGER = 'LOGGER_RESOURCES';			///< 紀錄目錄鍵值 
+	const RESOURCES_DEVELOP_MARK = 'RESOURCES_DEVELOP_MARK';	///< 資源路徑開發標籤
 	
 	CONST RUN_MODE_WEB = 'web';
 	CONST RUN_MODE_CONSOLE = 'console';
@@ -115,7 +116,8 @@ class applicationFrameworkClass
 			if (static::$_staticParams['resources'][$resourceKey] == '') {
 				throw new exception('環境變數 : ' . $resourceKey . '尚未設定');
 			}
-			static::$_staticParams['resources'][$resourceKey] .=  DIRECTORY_SEPARATOR . static::applicationUid() . DIRECTORY_SEPARATOR;
+			$resourcesDevelopMark = isset($_SERVER[self::RESOURCES_DEVELOP_MARK]) ? $_SERVER[self::RESOURCES_DEVELOP_MARK] : '';
+			static::$_staticParams['resources'][$resourceKey] .=  DIRECTORY_SEPARATOR . static::applicationUid() . $resourcesDevelopMark . DIRECTORY_SEPARATOR;
 		}
 		$path = static::$_staticParams['resources'][$resourceKey];
 		if (!empty($dirList)) {
