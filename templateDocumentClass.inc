@@ -52,7 +52,7 @@ class templateDocumentClass
 	public function loadFile($file)
 	{
 		if (!file_exists($file)) {
-			throw new exception("指定的檔案 [{$file}] 不存在");
+			throw new \exception("指定的檔案 [{$file}] 不存在");
 		}
 		$this->propertySet('fileName', $file);
 		return $this->loadContents(file_get_contents($file));
@@ -167,7 +167,11 @@ class templateDocumentClass
 		$fileName = $this->fileName;
 		if ($labelList) {
 			foreach ($labelList as $labelName => $noUsed) {
-				$templateDocumentProviderInstance->queryValue($this, \m5D02F22739AA11E4B3C6005056847E34\constants\templateDocumentProviderModeConstantClass::MODE_LABEL, $path . $labelName, $value);
+				if ($templateDocumentProviderInstance instanceof templateDocumentProvider2Interface) {
+					$templateDocumentProviderInstance->queryValue($this, \m5D02F22739AA11E4B3C6005056847E34\constants\templateDocumentProviderModeConstantClass::MODE_LABEL, $labelName, $value);
+				} else {
+					$templateDocumentProviderInstance->queryValue($this, \m5D02F22739AA11E4B3C6005056847E34\constants\templateDocumentProviderModeConstantClass::MODE_LABEL, $path . $labelName, $value);
+				};
 				if (is_null($value)) {
 					$value = 'label=>' . $path . $labelName;
 				}
@@ -177,7 +181,11 @@ class templateDocumentClass
 		if ($blockList) {
 			foreach ($blockList as $blockName => $blockInfo) {
 				$value = null;
-				$customContent = $templateDocumentProviderInstance->queryValue($blockInfo['instance'], \m5D02F22739AA11E4B3C6005056847E34\constants\templateDocumentProviderModeConstantClass::MODE_BLOCK, $path . $blockName, $value);
+				if ($templateDocumentProviderInstance instanceof templateDocumentProvider2Interface) {
+					$customContent = $templateDocumentProviderInstance->queryValue($blockInfo['instance'], \m5D02F22739AA11E4B3C6005056847E34\constants\templateDocumentProviderModeConstantClass::MODE_BLOCK, '', $value);
+				} else {
+					$customContent = $templateDocumentProviderInstance->queryValue($blockInfo['instance'], \m5D02F22739AA11E4B3C6005056847E34\constants\templateDocumentProviderModeConstantClass::MODE_BLOCK, $path . $blockName, $value);
+				};
 				if (!is_null($value)) {
 					if (!$customContent) {
 						$blockInfo['instance']->loadContents($value);
