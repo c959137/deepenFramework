@@ -23,7 +23,7 @@ trait propertysClass
 	
 	[
 		'propertys' => [
-			'className' => [
+			'propName' => [
 				'get' => '',		// 是否可讀
 				'set' => '',		// 是否可寫
 				'value' => ''		// 值
