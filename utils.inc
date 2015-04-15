@@ -109,3 +109,21 @@ function asc2unicode($asciiData)
 		return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
 	}, $asciiData);	
 }
+
+/**
+	字串轉布林
+*/
+function strToBool($value, $defaultValue = false)
+{
+	if (is_bool($value)) {
+		return $value;
+	}
+	
+	if (is_string($value)) {
+		return preg_match('/^t(ure)|on|open|1$/im', $value);
+	} else if (is_numeric($value)) {
+		return $value!=0;
+	} else {
+		return $defaultValue;
+	}
+}

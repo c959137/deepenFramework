@@ -67,6 +67,11 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	
 	/**
 	* @brief 處理 request 動作前
+	 
+	  @code
+	  $this->requestMethodRegister('login', [$this, 'loginRequest']);
+	  @endcode
+	
 	* @author nico chen 2015-01-23
 	* @use onCreate
 	* @version 0.00.01
