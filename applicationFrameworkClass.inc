@@ -9,13 +9,14 @@ namespace m5D02F22739AA11E4B3C6005056847E34;
 require 'traits/propertysClass.inc';
 require 'instanceClass.inc';
 require 'traits/arrayPathClass.inc';
+require 'traits/fileUtilsClass.inc';
 
 /**
 * 系統框架類別
 */
 class applicationFrameworkClass 
 {
-	use traits\propertysClass, instanceClass;
+	use traits\propertysClass, instanceClass, traits\fileUtilsClass;
 	
 	const KEY_APPLICATION_UID = 'APPLICATION_UID';				///< 系統編號鍵值 
 	const KEY_RESOURCES_DATA = 'DATA_RESOURCES';				///< 資源目錄鍵值 
@@ -213,24 +214,6 @@ class applicationFrameworkClass
 		return $times;
 	}
 	
-	public static function pathChecker($path, $createDir = false)
-	{
-		if (file_exists($path)) {
-			return true;
-		}
-		if (!$createDir) {
-			return false;
-		}
-		
-		$umask = umask(0002);
-		$flag = @mkdir($path, 0775, true);
-		umask($umask);
-		/*
-		0664 => drw-r--r--
-		0774 => drwxr-xr--
-		*/
-		return $flag;
-	}
 	/**
 	* @brief 輸出版本資訊
 	*/
