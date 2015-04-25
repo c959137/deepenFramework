@@ -7,11 +7,12 @@ class connectionClass extends  \m5D02F22739AA11E4B3C6005056847E34\databases\conn
 	
 	protected function doServerInstance()
 	{
+		$connectionInformation = $this->connectionInformation;
 		$drive = 'mysql';
-		$dbname = 'gameCenter';
-		$host = '192.168.100.50';
-		$username = 'gameCenterRoot';
-		$password = 'PmoJcZc21K';
+		$dbname = $connectionInformation['db'];
+		$host = $connectionInformation['host'];
+		$username = $connectionInformation['username'];
+		$password = $connectionInformation['password'];
 		$dsn = "{$drive}:dbname={$dbname}; host={$host}";
 		$driverOptions = [
 			\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
@@ -25,11 +26,14 @@ class connectionClass extends  \m5D02F22739AA11E4B3C6005056847E34\databases\conn
 		try {
 			$statementInstance = $this->serverInstance->query($sqlScript);
 			if ($statementInstance instanceof \PDOStatement) {
-				return new recordsetClass($statementInstance);
+				$recordsetClass = \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('recordsetClass', 'databases\pdo', '5D02F22739AA11E4B3C6005056847E34');
+				return new $recordsetClass($statementInstance);
 			} else {
+				\m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('queryExceptionClass', 'databases\exceptions', '5D02F22739AA11E4B3C6005056847E34');
 				throw new \m5D02F22739AA11E4B3C6005056847E34\databases\exceptions\queryExceptionClass($sqlScript);
 			};
 		} catch (\PDOException $exceptionInstance) {
+			\m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('queryExceptionClass', 'databases\exceptions', '5D02F22739AA11E4B3C6005056847E34');
 			throw new \m5D02F22739AA11E4B3C6005056847E34\databases\exceptions\queryExceptionClass($sqlScript, $exceptionInstance);
 		} catch (\exception $exceptionInstance) {
 			throw $exceptionInstance;
@@ -40,8 +44,10 @@ class connectionClass extends  \m5D02F22739AA11E4B3C6005056847E34\databases\conn
 	{
 		$statementInstance = $this->serverInstance->prepare($sqlScript);
 		if ($statementInstance->execute()) {
-			return new recordsetClass($statementInstance);
+			$recordsetClass = \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('recordsetClass', 'databases\pdo', '5D02F22739AA11E4B3C6005056847E34');
+			return new $recordsetClass($statementInstance);
 		} else {
+			\m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('queryExceptionClass', 'databases\exceptions', '5D02F22739AA11E4B3C6005056847E34');
 			throw new \m5D02F22739AA11E4B3C6005056847E34\databases\exceptions\queryExceptionClass($sqlScript);
 		};
 	}
