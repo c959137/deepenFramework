@@ -85,7 +85,8 @@ class webApplicationClass extends applicationAbstractClass
 		if ($matched) {
 			return $info['instance']->out();
 		} else {
-			static::header404();
+			throw new requestHeader404ExceptionClass();
+			//static::header404();
 		};
 	}
 	
@@ -172,4 +173,9 @@ class webApplicationClass extends applicationAbstractClass
 		$keyName = 'activeInfo';
 		return $webPageInstance instanceof self::$_staticParams[$keyName]['fullClassName'];
 	}
+}
+
+class requestHeader404ExceptionClass  extends \exception
+{
+	
 }

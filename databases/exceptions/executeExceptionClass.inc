@@ -1,7 +1,7 @@
 <?php
 namespace m5D02F22739AA11E4B3C6005056847E34\databases\exceptions;
 \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('exceptionClass', 'databases\exceptions');
-class queryExceptionClass extends exceptionClass
+class executeExceptionClass extends exceptionClass
 {
 	use \m5D02F22739AA11E4B3C6005056847E34\traits\propertysClass;
 	private $_instanceParams = [

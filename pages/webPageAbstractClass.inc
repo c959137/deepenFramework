@@ -165,13 +165,29 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	*/
 	protected function onExceptions(\exception $exceptionInstance, $onOutThrow = false)
 	{	
+		if (\m5D02F22739AA11E4B3C6005056847E34\application\webApplicationClass::isAjax()) {
+			$responseData  = [
+				'exitCode' => false,
+				'exceptionClass' => get_class($exceptionInstance),
+				'message' => $exceptionInstance->getMessage(),
+				'file' => $exceptionInstance->getFile(),
+				'line' => $exceptionInstance->getLine(),
+			];
+			header_remove();
+			ob_end_clean();
+			echo json_encode($responseData);
+			die();
+		}
+	
+	
 		if ($exceptionInstance instanceof \m5D02F22739AA11E4B3C6005056847E34\databases\exceptions\queryExceptionClass) {
 			showScript($exceptionInstance->sqlScript);
 			echo $exceptionInstance->getMessage(), '<br/>';
 		} else {
 			var_dump($exceptionInstance);
 		};
-		
+		echo "onOutThrow:<br/>"; 
+		var_dump($onOutThrow);
 		echo "file => {$exceptionInstance->getFile()}<br/>";
 		echo "line => {$exceptionInstance->getLine()}<br/>";
 		xxx();

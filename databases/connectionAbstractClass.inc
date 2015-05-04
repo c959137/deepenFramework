@@ -51,6 +51,9 @@ abstract class connectionAbstractClass {
 			return $this->doExecute($sqlScript);
 		} catch (m5D02F22739AA11E4B3C6005056847E34\databases\exceptions\exceptionClass $exceptionInstance) {
 			throw $exceptionInstance;
+		} catch (\PDOException $exceptionInstance) {
+			$exceptionClass = \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('executeExceptionClass', 'databases\exceptions');
+			throw new $exceptionClass($sqlScript, $exceptionInstance);
 		} catch (exception $exceptionInstance) {
 			var_dump($exceptionInstance);
 			xxx();
