@@ -120,7 +120,7 @@ function strToBool($value, $defaultValue = false)
 	}
 	
 	if (is_string($value)) {
-		return preg_match('/^t(ure)|on|open|1$/im', $value);
+		return preg_match('/^t(rue)|on|open|1$/im', $value);
 	} else if (is_numeric($value)) {
 		return $value!=0;
 	} else {
