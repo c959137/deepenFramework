@@ -43,6 +43,6 @@ class databaseManagerClass
 			$fullClassName = $moduleClass::classLoader($className, $middleNs);
 			self::$_staticParams[$keyName][$className] = $fullClassName;
 		}
-		return $fullClassName;
+		return self::$_staticParams[$keyName][$className];
 	}
 }
