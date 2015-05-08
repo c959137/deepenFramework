@@ -1,6 +1,9 @@
 <?php
 namespace m5D02F22739AA11E4B3C6005056847E34;
 \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('templateDocumentProviderModeConstantClass', 'constants');
+/**
+	套版類別
+*/
 class templateDocumentClass
 {
 	use traits\propertysClass, instanceClass;
@@ -165,6 +168,7 @@ class templateDocumentClass
 		$labelList = &$this->_instanceParams[self::LABEL_LIST_KEYNAME];
 		$path = $this->path;
 		$fileName = $this->fileName;
+		
 		if ($labelList) {
 			foreach ($labelList as $labelName => $noUsed) {
 				if ($templateDocumentProviderInstance instanceof templateDocumentProvider2Interface) {
@@ -182,14 +186,19 @@ class templateDocumentClass
 			foreach ($blockList as $blockName => $blockInfo) {
 				$value = null;
 				if ($templateDocumentProviderInstance instanceof templateDocumentProvider2Interface) {
-					$customContent = $templateDocumentProviderInstance->queryValue($blockInfo['instance'], \m5D02F22739AA11E4B3C6005056847E34\constants\templateDocumentProviderModeConstantClass::MODE_BLOCK, '', $value);
+					$customContent = $templateDocumentProviderInstance->queryValue($blockInfo['instance'], \m5D02F22739AA11E4B3C6005056847E34\constants\templateDocumentProviderModeConstantClass::MODE_BLOCK, $blockName, $value);
 				} else {
 					$customContent = $templateDocumentProviderInstance->queryValue($blockInfo['instance'], \m5D02F22739AA11E4B3C6005056847E34\constants\templateDocumentProviderModeConstantClass::MODE_BLOCK, $path . $blockName, $value);
 				};
+				
 				if (!is_null($value)) {
 					if (!$customContent) {
-						$blockInfo['instance']->loadContents($value);
-						$value = $blockInfo['instance']->out($templateDocumentProviderInstance);
+						if (is_callable($value)) {
+							$value = call_user_func_array($value, array($this));
+						} else {
+							$blockInfo['instance']->loadContents($value);
+							$value = $blockInfo['instance']->out($templateDocumentProviderInstance);
+						};
 					}
 				}
 				if (is_null($value)) {

@@ -57,7 +57,7 @@ interface templateDocumentProvider2Interface extends templateDocumentProviderInt
 	public function queryValue(
 		\m5D02F22739AA11E4B3C6005056847E34\templateDocumentClass $templateDocumentInstance, 
 		$providerMode, 
-		$labelName, 
+		$providerName, 
 		&$rawData
 	);
 }
