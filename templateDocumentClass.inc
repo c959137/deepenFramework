@@ -169,6 +169,19 @@ class templateDocumentClass
 		$path = $this->path;
 		$fileName = $this->fileName;
 		
+		if ($path == '/mainContent/') {
+/*			
+			echo __FILE__, ' => ', __LINE__, '<br/>';
+			echo 'fileName => ', $fileName, '<br/>';
+			echo 'path => ', $path, '<br/>';
+			var_dump($blockList);
+			var_dump($labelList);
+			echo $content , '<br/>';
+			die();
+*/			
+			//define('AAAAAAAAAA', '');
+		}
+		
 		if ($labelList) {
 			foreach ($labelList as $labelName => $noUsed) {
 				if ($templateDocumentProviderInstance instanceof templateDocumentProvider2Interface) {
@@ -192,8 +205,16 @@ class templateDocumentClass
 				};
 				
 				if (!is_null($value)) {
+if (defined('AAAAAAAAAA')) {
+	echo $blockName, '<br/>';
+	var_dump($customContent);
+	echo __FILE__, '-> ', __LINE__, '<br/>';
+	die();
+}
 					if (!$customContent) {
 						if (is_callable($value)) {
+echo __FILE__, '-> ', __LINE__, '<br/>';
+die();
 							$value = call_user_func_array($value, array($this));
 						} else {
 							$blockInfo['instance']->loadContents($value);
@@ -213,5 +234,19 @@ class templateDocumentClass
 			}
 		}
 		return $content;
+	}
+	
+	public function childBlockInstance($childBlockName) 
+	{
+		$blockList = &$this->_instanceParams[self::BLOCK_LIST_KEYNAME];
+		if (empty($blockList)) {
+			return null;
+		}
+		foreach ($blockList as $blockName => $info) {
+			if ($childBlockName == $blockName) {
+				return $info['instance'];
+			}
+		}
+		return null;
 	}
 }
