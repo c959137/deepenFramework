@@ -23,7 +23,7 @@ class applicationFrameworkClass
 	const KEY_RESOURCES_CONFIG = 'CONFIG_RESOURCES';			///< 設定目錄鍵值 
 	const KEY_RESOURCES_LOGGER = 'LOGGER_RESOURCES';			///< 紀錄目錄鍵值 
 	const RESOURCES_DEVELOP_MARK = 'RESOURCES_DEVELOP_MARK';	///< 資源路徑開發標籤
-	
+	const SUB_VERSION = 'SUB_VERSION';							///< 版本編號						
 	CONST RUN_MODE_WEB = 'web';
 	CONST RUN_MODE_CONSOLE = 'console';
 	
@@ -364,5 +364,18 @@ class applicationFrameworkClass
 			throw new \exception("指定的路徑不在模組內");
 		}
 		return static::moduleClassLoader($moduleUid);
+	}
+	/**
+	* @brief 取得系統子版本
+	* @return string 
+	* @author nico chen 2015-05-14
+	* @version 0.00.01
+	* \b CHANGE \b HISTORY: <br>	 
+	*   <b>- nico chen / 2015-05-14</b>    
+	*      - 建立函數			
+	*/
+	public static function subVersion()
+	{
+		return (isset($_SERVER[self::SUB_VERSION])) ? $_SERVER[self::SUB_VERSION] : '';
 	}
 }
