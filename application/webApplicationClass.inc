@@ -59,6 +59,7 @@ class webApplicationClass extends applicationAbstractClass
 	
 	public static function execute()
 	{
+		/*
 		$keyName = 'route';
 		$matched = false;
 		static $webPageClass = 'm5D02F22739AA11E4B3C6005056847E34\pages\webPageAbstractClass';
@@ -82,12 +83,62 @@ class webApplicationClass extends applicationAbstractClass
 				break;
 			}
 		}
-		if ($matched) {
-			return $info['instance']->out();
+		*/
+		$pageInfo = static::pageInfoByPath($_SERVER['REDIRECT_URL'], true);
+		if ($pageInfo) {
+			$instance = static::instance();
+			$instance->propertySet('matchs', $pageInfo['instance']->matchs);
+			return $pageInfo['instance']->out();
 		} else {
 			throw new requestHeader404ExceptionClass();
 			//static::header404();
 		};
+	}
+	
+	protected static function pageInfoByPath($path, $isActivePage = false)
+	{ 
+		$keyName = 'route';
+		$matched = false;
+		static $webPageClass = 'm5D02F22739AA11E4B3C6005056847E34\pages\webPageAbstractClass';
+		foreach (self::$_staticParams[$keyName] as $urlPattern => &$info) {
+			if (!@preg_match($urlPattern, $path, $matchs)) {
+				continue;
+			}
+			if (empty($info['instance'])) {
+				$applicationModuleClass = static::applicationModuleClass();
+				$fullClassName = $applicationModuleClass::classLoader($info['className'], $info['middleName']);
+				$info['fullClassName'] = $fullClassName;
+				if (!is_subclass_of($fullClassName, $webPageClass)) {
+					throw new \exception('[' . $fullClassName . '] 必須繼承自 [' .  $webPageClass . ']');
+				}
+/*				
+				$instance = static::instance();
+				$instance->propertySet('matchs', $matchs);
+				
+				self::$_staticParams['activeInfo'] = &$info;
+*/				
+				if ($isActivePage) {
+					self::$_staticParams['activeInfo'] = &$info;
+				}
+				$info['instance'] = $fullClassName::instance($matchs);
+				$matched = true;
+				break;
+			}
+		}
+		if ($matched) {
+			return $info;
+		} else {
+			return null;
+		}
+	}
+	
+	public static function pageInstance($path)
+	{
+		$pageInfo = static::pageInfoByPath($path);
+		if (!$pageInfo) {
+			return null;
+		}
+		return $pageInfo['instance'];
 	}
 	
 	public static function header404()
@@ -171,6 +222,9 @@ class webApplicationClass extends applicationAbstractClass
 	public static function isActivePageInstance(\m5D02F22739AA11E4B3C6005056847E34\pages\webPageAbstractClass $webPageInstance)
 	{
 		$keyName = 'activeInfo';
+		if (empty(self::$_staticParams[$keyName])) {
+			return false;
+		}
 		return $webPageInstance instanceof self::$_staticParams[$keyName]['fullClassName'];
 	}
 }

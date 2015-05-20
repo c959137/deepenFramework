@@ -16,10 +16,17 @@ namespace m5D02F22739AA11E4B3C6005056847E34\pages;
 */
 abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F22739AA11E4B3C6005056847E34\templateDocumentProviderInterface
 {
+	use \m5D02F22739AA11E4B3C6005056847E34\traits\propertysClass;
 	use \m5D02F22739AA11E4B3C6005056847E34\traits\arrayPathClass;
 	const SESSION_KEY_GAP = '::';
 	private static $_staticParams = [];
 	private $_instanceParams = [
+		'propertys' => [
+			'matchs' => [
+				'get' => true,
+				'set' => false,
+			]
+		],
 		'provider' => []
 	];
 
@@ -126,7 +133,6 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	final protected function requestHandle()
 	{
 		$applicationInstance = static::applicationInstance();
-		
 		$requestData = $this->requestDataProcessing($applicationInstance::requestData());
 		if (!isset($requestData['work']) && isset($_GET['work'])) {
 			$requestData['work'] = $_GET['work'];
@@ -473,11 +479,12 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 		var_dump($pageInstance->_instanceParams['provider']);
 	}
 	
-	public static function instance()
+	public static function instance(array $matchs)
 	{
 		$className = get_called_class();
 		if (!isset(self::$_staticParams[$className])) {
 			self::$_staticParams[$className] = new $className();
+			self::$_staticParams[$className]->propertySet('matchs', $matchs);
 		}
 		return self::$_staticParams[$className];
 	}
