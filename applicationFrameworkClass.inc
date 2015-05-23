@@ -365,6 +365,7 @@ class applicationFrameworkClass
 		}
 		return static::moduleClassLoader($moduleUid);
 	}
+
 	/**
 	* @brief 取得系統子版本
 	* @return string 
@@ -378,4 +379,30 @@ class applicationFrameworkClass
 	{
 		return (isset($_SERVER[self::SUB_VERSION])) ? $_SERVER[self::SUB_VERSION] : '';
 	}
+	
+	/**
+	* @brief 類別自動載入機制, 已框架的 classLoader 納入
+	* @return bool 
+	* @author nico chen 2015-05-23
+	* @version 0.00.01
+	* \b CHANGE \b HISTORY: <br>	 
+	*   <b>- nico chen / 2015-05-23</b>    
+	*      - 建立函數			
+	*/
+	public static function autoload($className)
+	{
+		$info = explode('\\', $className);
+		$moduleUid = substr (array_shift($info), 1);
+		$className = array_pop($info);
+		$path = implode('\\', $info);
+		\m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader($className, $path, $moduleUid);
+	}
+}
+
+if (!defined('applicationFrameworkInit')) {
+	define('applicationFrameworkInit', '');
+	///< 註冊框架下的類別自動載入機制
+	spl_autoload_register(
+		['\m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass', 'autoload']
+	);
 }
