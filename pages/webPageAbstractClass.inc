@@ -22,10 +22,6 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	private static $_staticParams = [];
 	private $_instanceParams = [
 		'propertys' => [
-			'matchs' => [
-				'get' => true,
-				'set' => false,
-			]
 		],
 		'provider' => []
 	];
@@ -479,13 +475,40 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 		var_dump($pageInstance->_instanceParams['provider']);
 	}
 	
-	public static function instance(array $matchs)
+	public static function instance(array $matchs = [])
 	{
+		$keyName = __FUNCTION__;
 		$className = get_called_class();
-		if (!isset(self::$_staticParams[$className])) {
-			self::$_staticParams[$className] = new $className();
-			self::$_staticParams[$className]->propertySet('matchs', $matchs);
+		if (!isset(self::$_staticParams[$keyName][$className])) {
+			static::matchs($matchs);
+			self::$_staticParams[$keyName][$className] = new $className();
 		}
-		return self::$_staticParams[$className];
+		return self::$_staticParams[$keyName][$className];
+	}
+	
+	/**
+		存放 path 解析的参數
+	*/
+	protected static function matchs($value = '')
+	{
+		$keyName = __FUNCTION__;
+		$className = get_called_class();
+		if ($value == '') {
+			return isset(self::$_staticParams[$keyName][$className]) ? self::$_staticParams[$keyName][$className] : [];
+		} else {
+			self::$_staticParams[$keyName][$className] = $value;
+		}
+	}
+	
+	protected function matchsGet()
+	{
+		$keyName = static::propMethodNameToKeyName(__FUNCTION__);
+		return static::$keyName();
+	}
+	
+	protected function matchsSet($value)
+	{
+		$keyName = static::propMethodNameToKeyName(__FUNCTION__);
+		static::$keyName($value);
 	}
 }

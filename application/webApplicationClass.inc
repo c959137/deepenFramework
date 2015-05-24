@@ -111,19 +111,16 @@ class webApplicationClass extends applicationAbstractClass
 				if (!is_subclass_of($fullClassName, $webPageClass)) {
 					throw new \exception('[' . $fullClassName . '] 必須繼承自 [' .  $webPageClass . ']');
 				}
-/*				
-				$instance = static::instance();
-				$instance->propertySet('matchs', $matchs);
-				
-				self::$_staticParams['activeInfo'] = &$info;
-*/				
 				if ($isActivePage) {
 					self::$_staticParams['activeInfo'] = &$info;
 				}
 				$info['instance'] = $fullClassName::instance($matchs);
 				$matched = true;
 				break;
-			}
+			} else {
+				$matched = true;
+				break;
+			};
 		}
 		if ($matched) {
 			return $info;
