@@ -57,6 +57,7 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 			try {
 				$this->onBeforeRequest();
 				$requestData = $this->requestHandle();
+				self::$_staticParams['requestData'] = $requestData;
 				$applicationInstance = $this->applicationInstance;
 				if ($applicationInstance::isAjax()) {
 					echo json_encode($requestData);
@@ -510,5 +511,11 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	{
 		$keyName = static::propMethodNameToKeyName(__FUNCTION__);
 		static::$keyName($value);
+	}
+	
+	public static function requestData() 
+	{
+		$keyName = __FUNCTION__;
+		return isset(self::$_staticParams[$keyName]) ? self::$_staticParams[$keyName] : \m5D02F22739AA11E4B3C6005056847E34\application\webApplicationClass::requestData();
 	}
 }

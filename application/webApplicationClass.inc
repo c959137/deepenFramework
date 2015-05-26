@@ -28,10 +28,6 @@ class webApplicationClass extends applicationAbstractClass
 	private static $_staticParams = [];
 	private $_instanceParams = [
 		'propertys' => [
-			'matchs' => [
-				'get' => true,
-				'set' => false,
-			]
 		]
 	];
 
@@ -59,35 +55,9 @@ class webApplicationClass extends applicationAbstractClass
 	
 	public static function execute()
 	{
-		/*
-		$keyName = 'route';
-		$matched = false;
-		static $webPageClass = 'm5D02F22739AA11E4B3C6005056847E34\pages\webPageAbstractClass';
-		foreach (self::$_staticParams[$keyName] as $urlPattern => &$info) {
-			if (!@preg_match($urlPattern, $_SERVER['REDIRECT_URL'], $matchs)) {
-				continue;
-			}
-			if (empty($info['instance'])) {
-				$applicationModuleClass = static::applicationModuleClass();
-				$fullClassName = $applicationModuleClass::classLoader($info['className'], $info['middleName']);
-				$info['fullClassName'] = $fullClassName;
-				if (!is_subclass_of($fullClassName, $webPageClass)) {
-					throw new \exception('[' . $fullClassName . '] 必須繼承自 [' .  $webPageClass . ']');
-				}
-				$instance = static::instance();
-				$instance->propertySet('matchs', $matchs);
-				
-				self::$_staticParams['activeInfo'] = &$info;
-				$info['instance'] = $fullClassName::instance(true);
-				$matched = true;
-				break;
-			}
-		}
-		*/
 		$pageInfo = static::pageInfoByPath($_SERVER['REDIRECT_URL'], true);
 		if ($pageInfo) {
 			$instance = static::instance();
-			$instance->propertySet('matchs', $pageInfo['instance']->matchs);
 			return $pageInfo['instance']->out();
 		} else {
 			throw new requestHeader404ExceptionClass();
@@ -223,6 +193,16 @@ class webApplicationClass extends applicationAbstractClass
 			return false;
 		}
 		return $webPageInstance instanceof self::$_staticParams[$keyName]['fullClassName'];
+	}
+	
+	protected function matchsGet()
+	{
+		return isset(self::$_staticParams['activeInfo']) ? self::$_staticParams['activeInfo']->matchs : [];
+	}
+	
+	public static function matchs()
+	{
+		return isset(self::$_staticParams['activeInfo']) ? self::$_staticParams['activeInfo']->matchs : [];
 	}
 }
 
