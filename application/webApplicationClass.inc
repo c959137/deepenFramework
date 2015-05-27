@@ -197,12 +197,12 @@ class webApplicationClass extends applicationAbstractClass
 	
 	protected function matchsGet()
 	{
-		return isset(self::$_staticParams['activeInfo']) ? self::$_staticParams['activeInfo']->matchs : [];
+		return isset(self::$_staticParams['activeInfo']) ? self::$_staticParams['activeInfo']['instance']->matchs : [];
 	}
 	
 	public static function matchs()
 	{
-		return isset(self::$_staticParams['activeInfo']) ? self::$_staticParams['activeInfo']->matchs : [];
+		return isset(self::$_staticParams['activeInfo']) ? self::$_staticParams['activeInfo']['instance']->matchs : [];
 	}
 }
 
