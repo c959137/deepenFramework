@@ -490,7 +490,7 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	/**
 		存放 path 解析的参數
 	*/
-	protected static function matchs($value = '')
+	public static function matchs($value = '')
 	{
 		$keyName = __FUNCTION__;
 		$className = get_called_class();

@@ -197,12 +197,16 @@ class webApplicationClass extends applicationAbstractClass
 	
 	protected function matchsGet()
 	{
-		return isset(self::$_staticParams['activeInfo']) ? self::$_staticParams['activeInfo']['instance']->matchs : [];
+		return static::matchs();
 	}
 	
 	public static function matchs()
 	{
-		return isset(self::$_staticParams['activeInfo']) ? self::$_staticParams['activeInfo']['instance']->matchs : [];
+		if (!isset(self::$_staticParams['activeInfo'])) {
+			return [];
+		}
+		$className = self::$_staticParams['activeInfo']['fullClassName'];
+		return $className::matchs();
 	}
 }
 
