@@ -437,7 +437,7 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 			if ($html != '') {
 				$html .= "\n";
 			}
-			$html .= static::blockContent('link', $attrs + ['href' => $url, 'rel' => 'stylesheet', ], false);
+			$html .= static::blockContent('link', $attrs + ['href' => $url, 'rel' => 'stylesheet', 'type' => 'text/css'], false);
 		}
 		return $html;
 	}
