@@ -393,6 +393,9 @@ class applicationFrameworkClass
 	{
 		$info = explode('\\', $className);
 		$moduleUid = substr (array_shift($info), 1);
+		if (!preg_match('/^[0-9a-f]{32}$/im', $moduleUid)) {
+			return true;
+		}
 		$className = array_pop($info);
 		$path = implode('\\', $info);
 		\m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader($className, $path, $moduleUid);
