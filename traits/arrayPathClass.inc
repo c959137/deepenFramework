@@ -65,7 +65,7 @@ trait arrayPathClass
 	} 	
 	
 	
-	protected static function arrayToPath()
+	public static function arrayToPath()
 	{
 		$list = [];
 		$args = func_get_args();

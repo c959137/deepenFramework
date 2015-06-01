@@ -92,3 +92,38 @@ function showArray(array $data)
 	}
 	
 }
+
+/**
+	將 unicode escape 得字串轉為 utf-8
+	@code
+		$a = '#U6240#U5f97#U5206#U914d#U3001GDP#U8207#U7d93#U6fdf#U6210#U9577.DOC';
+		echo asc2unicode($a);
+		
+		所得分配、GDP與經濟成長.DOC
+		
+	@endcode
+*/
+function asc2unicode($asciiData)
+{
+	return  preg_replace_callback('/#[uU]([0-9a-f]{4})/im', function ($match) {
+		return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
+	}, $asciiData);	
+}
+
+/**
+	字串轉布林
+*/
+function strToBool($value, $defaultValue = false)
+{
+	if (is_bool($value)) {
+		return $value;
+	}
+	
+	if (is_string($value)) {
+		return preg_match('/^t(rue)|on|open|1$/im', $value);
+	} else if (is_numeric($value)) {
+		return $value!=0;
+	} else {
+		return $defaultValue;
+	}
+}

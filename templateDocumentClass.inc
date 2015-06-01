@@ -1,6 +1,9 @@
 <?php
 namespace m5D02F22739AA11E4B3C6005056847E34;
 \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('templateDocumentProviderModeConstantClass', 'constants');
+/**
+	套版類別
+*/
 class templateDocumentClass
 {
 	use traits\propertysClass, instanceClass;
@@ -52,7 +55,7 @@ class templateDocumentClass
 	public function loadFile($file)
 	{
 		if (!file_exists($file)) {
-			throw new exception("指定的檔案 [{$file}] 不存在");
+			throw new \exception("指定的檔案 [{$file}] 不存在");
 		}
 		$this->propertySet('fileName', $file);
 		return $this->loadContents(file_get_contents($file));
@@ -165,9 +168,27 @@ class templateDocumentClass
 		$labelList = &$this->_instanceParams[self::LABEL_LIST_KEYNAME];
 		$path = $this->path;
 		$fileName = $this->fileName;
+		
+		if ($path == '/mainContent/') {
+/*			
+			echo __FILE__, ' => ', __LINE__, '<br/>';
+			echo 'fileName => ', $fileName, '<br/>';
+			echo 'path => ', $path, '<br/>';
+			var_dump($blockList);
+			var_dump($labelList);
+			echo $content , '<br/>';
+			die();
+*/			
+			//define('AAAAAAAAAA', '');
+		}
+		
 		if ($labelList) {
 			foreach ($labelList as $labelName => $noUsed) {
-				$templateDocumentProviderInstance->queryValue($this, \m5D02F22739AA11E4B3C6005056847E34\constants\templateDocumentProviderModeConstantClass::MODE_LABEL, $path . $labelName, $value);
+				if ($templateDocumentProviderInstance instanceof templateDocumentProvider2Interface) {
+					$templateDocumentProviderInstance->queryValue($this, \m5D02F22739AA11E4B3C6005056847E34\constants\templateDocumentProviderModeConstantClass::MODE_LABEL, $labelName, $value);
+				} else {
+					$templateDocumentProviderInstance->queryValue($this, \m5D02F22739AA11E4B3C6005056847E34\constants\templateDocumentProviderModeConstantClass::MODE_LABEL, $path . $labelName, $value);
+				};
 				if (is_null($value)) {
 					$value = 'label=>' . $path . $labelName;
 				}
@@ -177,11 +198,28 @@ class templateDocumentClass
 		if ($blockList) {
 			foreach ($blockList as $blockName => $blockInfo) {
 				$value = null;
-				$customContent = $templateDocumentProviderInstance->queryValue($blockInfo['instance'], \m5D02F22739AA11E4B3C6005056847E34\constants\templateDocumentProviderModeConstantClass::MODE_BLOCK, $path . $blockName, $value);
+				if ($templateDocumentProviderInstance instanceof templateDocumentProvider2Interface) {
+					$customContent = $templateDocumentProviderInstance->queryValue($blockInfo['instance'], \m5D02F22739AA11E4B3C6005056847E34\constants\templateDocumentProviderModeConstantClass::MODE_BLOCK, $blockName, $value);
+				} else {
+					$customContent = $templateDocumentProviderInstance->queryValue($blockInfo['instance'], \m5D02F22739AA11E4B3C6005056847E34\constants\templateDocumentProviderModeConstantClass::MODE_BLOCK, $path . $blockName, $value);
+				};
+				
 				if (!is_null($value)) {
+if (defined('AAAAAAAAAA')) {
+	echo $blockName, '<br/>';
+	var_dump($customContent);
+	echo __FILE__, '-> ', __LINE__, '<br/>';
+	die();
+}
 					if (!$customContent) {
-						$blockInfo['instance']->loadContents($value);
-						$value = $blockInfo['instance']->out($templateDocumentProviderInstance);
+						if (is_callable($value)) {
+echo __FILE__, '-> ', __LINE__, '<br/>';
+die();
+							$value = call_user_func_array($value, array($this));
+						} else {
+							$blockInfo['instance']->loadContents($value);
+							$value = $blockInfo['instance']->out($templateDocumentProviderInstance);
+						};
 					}
 				}
 				if (is_null($value)) {
@@ -196,5 +234,19 @@ class templateDocumentClass
 			}
 		}
 		return $content;
+	}
+	
+	public function childBlockInstance($childBlockName) 
+	{
+		$blockList = &$this->_instanceParams[self::BLOCK_LIST_KEYNAME];
+		if (empty($blockList)) {
+			return null;
+		}
+		foreach ($blockList as $blockName => $info) {
+			if ($childBlockName == $blockName) {
+				return $info['instance'];
+			}
+		}
+		return null;
 	}
 }

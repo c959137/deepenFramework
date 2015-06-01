@@ -45,7 +45,7 @@ abstract class pageAbstractClass
 	
 	abstract protected function onDestroy();
 	
-	public static function instance()
+	public static function instance(array $matchs)
 	{
 		$className = get_called_class();
 		if (!isset(self::$_staticParams[$className])) {

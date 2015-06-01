@@ -2,7 +2,20 @@
 namespace m5D02F22739AA11E4B3C6005056847E34\databases;
 abstract class connectionAbstractClass {
 	use	\m5D02F22739AA11E4B3C6005056847E34\traits\propertysClass;
-	private $_instanceParams = [];
+	private $_instanceParams = [
+		'propertys' => [
+			'connectionInformation' => [
+				'get' => true,
+				'set' => false,
+			],
+		],
+	];
+	
+	public function __construct(array $connectionInformation)
+	{
+		//parent::__construct();
+		$this->propertySet('connectionInformation', $connectionInformation);
+	}
 	
 	protected function serverInstanceGet()
 	{
@@ -38,6 +51,9 @@ abstract class connectionAbstractClass {
 			return $this->doExecute($sqlScript);
 		} catch (m5D02F22739AA11E4B3C6005056847E34\databases\exceptions\exceptionClass $exceptionInstance) {
 			throw $exceptionInstance;
+		} catch (\PDOException $exceptionInstance) {
+			$exceptionClass = \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('executeExceptionClass', 'databases\exceptions');
+			throw new $exceptionClass($sqlScript, $exceptionInstance);
 		} catch (exception $exceptionInstance) {
 			var_dump($exceptionInstance);
 			xxx();

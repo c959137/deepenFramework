@@ -16,10 +16,13 @@ namespace m5D02F22739AA11E4B3C6005056847E34\pages;
 */
 abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F22739AA11E4B3C6005056847E34\templateDocumentProviderInterface
 {
+	use \m5D02F22739AA11E4B3C6005056847E34\traits\propertysClass;
 	use \m5D02F22739AA11E4B3C6005056847E34\traits\arrayPathClass;
 	const SESSION_KEY_GAP = '::';
 	private static $_staticParams = [];
 	private $_instanceParams = [
+		'propertys' => [
+		],
 		'provider' => []
 	];
 
@@ -54,6 +57,7 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 			try {
 				$this->onBeforeRequest();
 				$requestData = $this->requestHandle();
+				self::$_staticParams['requestData'] = $requestData;
 				$applicationInstance = $this->applicationInstance;
 				if ($applicationInstance::isAjax()) {
 					echo json_encode($requestData);
@@ -67,6 +71,11 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	
 	/**
 	* @brief 處理 request 動作前
+	 
+	  @code
+	  $this->requestMethodRegister('login', [$this, 'loginRequest']);
+	  @endcode
+	
 	* @author nico chen 2015-01-23
 	* @use onCreate
 	* @version 0.00.01
@@ -121,7 +130,6 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	final protected function requestHandle()
 	{
 		$applicationInstance = static::applicationInstance();
-		
 		$requestData = $this->requestDataProcessing($applicationInstance::requestData());
 		if (!isset($requestData['work']) && isset($_GET['work'])) {
 			$requestData['work'] = $_GET['work'];
@@ -160,13 +168,29 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	*/
 	protected function onExceptions(\exception $exceptionInstance, $onOutThrow = false)
 	{	
+		if (\m5D02F22739AA11E4B3C6005056847E34\application\webApplicationClass::isAjax()) {
+			$responseData  = [
+				'exitCode' => false,
+				'exceptionClass' => get_class($exceptionInstance),
+				'message' => $exceptionInstance->getMessage(),
+				'file' => $exceptionInstance->getFile(),
+				'line' => $exceptionInstance->getLine(),
+			];
+			header_remove();
+			ob_end_clean();
+			echo json_encode($responseData);
+			die();
+		}
+	
+	
 		if ($exceptionInstance instanceof \m5D02F22739AA11E4B3C6005056847E34\databases\exceptions\queryExceptionClass) {
 			showScript($exceptionInstance->sqlScript);
 			echo $exceptionInstance->getMessage(), '<br/>';
 		} else {
 			var_dump($exceptionInstance);
 		};
-		
+		echo "onOutThrow:<br/>"; 
+		var_dump($onOutThrow);
 		echo "file => {$exceptionInstance->getFile()}<br/>";
 		echo "line => {$exceptionInstance->getLine()}<br/>";
 		xxx();
@@ -354,15 +378,44 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 			return '';
 		}
 		$html = '';
-		foreach ($this->_instanceParams[$keyName][$resourceType] as $url => $noUsed) {
+		foreach ($this->_instanceParams[$keyName][$resourceType] as $url => $attrs) {
 			if ($html != '') {
 				$html .= "\n";
 			}
-			$html .= "<script type='text/javascript' src='{$url}'></script>";
+			$html .= static::blockContent('script', $attrs + ['type' => 'text/javascript', 'src' => $url]);
 		}
 		return $html;
 	}
 
+	/**
+	* @brief 產生 html
+	* @param string $tagName 標籤名稱
+	* @param boolean $pair true: 一對標籤, false: 單標籤
+	* @param mixed $attrs 屬性列表
+	* @param string $content 內容
+	* @return string 
+	* @author nico chen 2015-03-17
+	* @version 0.00.01
+	* \b CHANGE \b HISTORY: <br>	 
+	*   <b>- nico chen / 2015-03-17</b>    
+	*      - 建立函數			
+	*/
+	protected static function blockContent($tagName, $attrs = [], $pair = true, $content = '') {
+		$attrStr = '';
+		foreach ($attrs as $name => $value) {
+			if ($attrStr!= '') {
+				$attrStr .= ' ';
+			}
+			$attrStr .= $name . '="' .  $value . '"';
+		}
+		$html = "<{$tagName} {$attrStr}>";
+		if ($pair) {
+			$html .= "{$content}</{$tagName}>";
+		}
+		return $html;
+	}
+	
+	
 	/**
 	* @brief 匯出 css 資料
 	* @return string 
@@ -380,11 +433,11 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 			return '';
 		}
 		$html = '';
-		foreach ($this->_instanceParams[$keyName][$resourceType] as $url => $noUsed) {
+		foreach ($this->_instanceParams[$keyName][$resourceType] as $url => $attrs) {
 			if ($html != '') {
 				$html .= "\n";
 			}
-			$html .= "<link rel='stylesheet' type='text/css' href='{$url}'>";
+			$html .= static::blockContent('link', $attrs + ['href' => $url, 'rel' => 'stylesheet', 'type' => 'text/css'], false);
 		}
 		return $html;
 	}
@@ -423,12 +476,46 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 		var_dump($pageInstance->_instanceParams['provider']);
 	}
 	
-	public static function instance()
+	public static function instance(array $matchs = [])
 	{
+		$keyName = __FUNCTION__;
 		$className = get_called_class();
-		if (!isset(self::$_staticParams[$className])) {
-			self::$_staticParams[$className] = new $className();
+		if (!isset(self::$_staticParams[$keyName][$className])) {
+			static::matchs($matchs);
+			self::$_staticParams[$keyName][$className] = new $className();
 		}
-		return self::$_staticParams[$className];
+		return self::$_staticParams[$keyName][$className];
+	}
+	
+	/**
+		存放 path 解析的参數
+	*/
+	public static function matchs($value = '')
+	{
+		$keyName = __FUNCTION__;
+		$className = get_called_class();
+		if ($value == '') {
+			return isset(self::$_staticParams[$keyName][$className]) ? self::$_staticParams[$keyName][$className] : [];
+		} else {
+			self::$_staticParams[$keyName][$className] = $value;
+		}
+	}
+	
+	protected function matchsGet()
+	{
+		$keyName = static::propMethodNameToKeyName(__FUNCTION__);
+		return static::$keyName();
+	}
+	
+	protected function matchsSet($value)
+	{
+		$keyName = static::propMethodNameToKeyName(__FUNCTION__);
+		static::$keyName($value);
+	}
+	
+	public static function requestData() 
+	{
+		$keyName = __FUNCTION__;
+		return isset(self::$_staticParams[$keyName]) ? self::$_staticParams[$keyName] : \m5D02F22739AA11E4B3C6005056847E34\application\webApplicationClass::requestData();
 	}
 }

@@ -9,19 +9,21 @@ namespace m5D02F22739AA11E4B3C6005056847E34;
 require 'traits/propertysClass.inc';
 require 'instanceClass.inc';
 require 'traits/arrayPathClass.inc';
+require 'traits/fileUtilsClass.inc';
 
 /**
 * 系統框架類別
 */
 class applicationFrameworkClass 
 {
-	use traits\propertysClass, instanceClass;
+	use traits\propertysClass, instanceClass, traits\fileUtilsClass;
 	
-	const KEY_APPLICATION_UID = 'APPLICATION_UID';			///< 系統編號鍵值 
-	const KEY_RESOURCES_DATA = 'DATA_RESOURCES';			///< 資源目錄鍵值 
-	const KEY_RESOURCES_CONFIG = 'CONFIG_RESOURCES';		///< 設定目錄鍵值 
-	const KEY_RESOURCES_LOGGER = 'LOGGER_RESOURCES';		///< 紀錄目錄鍵值 
-	
+	const KEY_APPLICATION_UID = 'APPLICATION_UID';				///< 系統編號鍵值 
+	const KEY_RESOURCES_DATA = 'DATA_RESOURCES';				///< 資源目錄鍵值 
+	const KEY_RESOURCES_CONFIG = 'CONFIG_RESOURCES';			///< 設定目錄鍵值 
+	const KEY_RESOURCES_LOGGER = 'LOGGER_RESOURCES';			///< 紀錄目錄鍵值 
+	const RESOURCES_DEVELOP_MARK = 'RESOURCES_DEVELOP_MARK';	///< 資源路徑開發標籤
+	const SUB_VERSION = 'SUB_VERSION';							///< 版本編號						
 	CONST RUN_MODE_WEB = 'web';
 	CONST RUN_MODE_CONSOLE = 'console';
 	
@@ -115,11 +117,17 @@ class applicationFrameworkClass
 			if (static::$_staticParams['resources'][$resourceKey] == '') {
 				throw new exception('環境變數 : ' . $resourceKey . '尚未設定');
 			}
-			static::$_staticParams['resources'][$resourceKey] .=  DIRECTORY_SEPARATOR . static::applicationUid() . DIRECTORY_SEPARATOR;
+			$resourcesDevelopMark = isset($_SERVER[self::RESOURCES_DEVELOP_MARK]) ? $_SERVER[self::RESOURCES_DEVELOP_MARK] : '';
+			static::$_staticParams['resources'][$resourceKey] .=  DIRECTORY_SEPARATOR . static::applicationUid() . $resourcesDevelopMark . DIRECTORY_SEPARATOR;
 		}
 		$path = static::$_staticParams['resources'][$resourceKey];
 		if (!empty($dirList)) {
-			$path .= implode(DIRECTORY_SEPARATOR, $dirList);
+			foreach ($dirList as $subPath) {
+				if (!$subPath) {
+					continue;
+				}
+				$path .= $subPath . DIRECTORY_SEPARATOR; 
+			}
 		}
 		static::pathChecker($path, true);
 		return $path;
@@ -206,24 +214,6 @@ class applicationFrameworkClass
 		return $times;
 	}
 	
-	public static function pathChecker($path, $createDir = false)
-	{
-		if (file_exists($path)) {
-			return true;
-		}
-		if (!$createDir) {
-			return false;
-		}
-		
-		$umask = umask(0002);
-		$flag = @mkdir($path, 0774, true);
-		umask($umask);
-		/*
-		0664 => drw-r--r--
-		0774 => drwxr-xr--
-		*/
-		return $flag;
-	}
 	/**
 	* @brief 輸出版本資訊
 	*/
@@ -270,7 +260,7 @@ class applicationFrameworkClass
 			}
 			$fn = $rootPath . 'moduleManagerClass.inc';
 			if (!file_exists($fn)) {
-				throw new \exception("指定的模組檔案 不存在");
+				throw new \exception("指定的模組管理檔案  {$moduleUid} - moduleManagerClass.inc 不存在");
 			}
 			require $fn;
 			
@@ -375,4 +365,47 @@ class applicationFrameworkClass
 		}
 		return static::moduleClassLoader($moduleUid);
 	}
+
+	/**
+	* @brief 取得系統子版本
+	* @return string 
+	* @author nico chen 2015-05-14
+	* @version 0.00.01
+	* \b CHANGE \b HISTORY: <br>	 
+	*   <b>- nico chen / 2015-05-14</b>    
+	*      - 建立函數			
+	*/
+	public static function subVersion()
+	{
+		return (isset($_SERVER[self::SUB_VERSION])) ? $_SERVER[self::SUB_VERSION] : '';
+	}
+	
+	/**
+	* @brief 類別自動載入機制, 已框架的 classLoader 納入
+	* @return bool 
+	* @author nico chen 2015-05-23
+	* @version 0.00.01
+	* \b CHANGE \b HISTORY: <br>	 
+	*   <b>- nico chen / 2015-05-23</b>    
+	*      - 建立函數			
+	*/
+	public static function autoload($className)
+	{
+		$info = explode('\\', $className);
+		$moduleUid = substr (array_shift($info), 1);
+		if (!preg_match('/^[0-9a-f]{32}$/im', $moduleUid)) {
+			return true;
+		}
+		$className = array_pop($info);
+		$path = implode('\\', $info);
+		\m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader($className, $path, $moduleUid);
+	}
+}
+
+if (!defined('applicationFrameworkInit')) {
+	define('applicationFrameworkInit', '');
+	///< 註冊框架下的類別自動載入機制
+	spl_autoload_register(
+		['\m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass', 'autoload']
+	);
 }
