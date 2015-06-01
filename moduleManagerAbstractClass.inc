@@ -123,7 +123,29 @@ abstract class moduleManagerAbstractClass
 		$instance = static::instance();
 		return $instance->actualPath;
 	}
+
+	public static function applicationConfig()
+	{
+		$keyName = __FUNCTION__;
+		if (!isset(self::$_staticParams[$keyName])) {
+			$subVersion = \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::subVersion();
+			$fn = \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::resourcesConfigPath() . "applicationConfig{$subVersion}.inc";
+			if (file_exists($fn)) {
+				$config = include $fn;	
+			} else {
+				$config = [];
+			};
+			self::$_staticParams[$keyName] = $config;
+		}
+		return self::$_staticParams[$keyName];
+	}
 	
+	public static function applicationConfigValue($name, $defaultValue)
+	{
+		$applicationConfig = static::applicationConfig();
+		return isset($applicationConfig[$name]) ? $applicationConfig[$name] : $defaultValue;
+	}
+
 	public static function show()
 	{
 		var_dump(self::$_staticParams);
