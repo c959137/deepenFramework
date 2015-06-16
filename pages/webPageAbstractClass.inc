@@ -308,7 +308,7 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 		return $info['customContents'];
 	}
 	
-	protected function resourceRegister($url, array $attrs = [], $resourceType = \m5D02F22739AA11E4B3C6005056847E34\constants\resourceTypeConstantClass::RESOURCE_TYPE_JS)
+	public function resourceRegister($url, array $attrs = [], $resourceType = \m5D02F22739AA11E4B3C6005056847E34\constants\resourceTypeConstantClass::RESOURCE_TYPE_JS)
 	{
 		\m5D02F22739AA11E4B3C6005056847E34\constants\resourceTypeConstantClass::resourceTypeChecker($resourceType);
 		$keyName = __FUNCTION__;
