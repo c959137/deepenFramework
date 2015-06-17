@@ -127,3 +127,25 @@ function strToBool($value, $defaultValue = false)
 		return $defaultValue;
 	}
 }
+
+/***
+	.NET RijndaelManaged 物件加密後, php 解碼
+	Rijndael 128, ecb, PKCS7
+	
+		$encodeData = '+nlp5xYwHUPQsKCidIS91fW16/CAHAdYKzN00ZY0VFs=';
+		$key = 'abcdefg123456789';
+		echo decodeData($encodeData, $key);
+		
+		>> Member=aaa&Password=bbb
+*/
+function decodeData($data, $key)
+{
+	$cp = mcrypt_module_open('rijndael-128', '', 'ecb', '');
+	$key = substr($key, 0, mcrypt_enc_get_key_size($cp)); 
+	$iv = mcrypt_create_iv(mcrypt_enc_get_iv_size($cp), MCRYPT_RAND); 
+	mcrypt_generic_init($cp, $key, $iv);
+	$decrypted = mdecrypt_generic($cp, base64_decode ($data));
+	mcrypt_generic_deinit($cp);
+	mcrypt_module_close($cp);
+	return $decrypted;
+};
