@@ -86,14 +86,29 @@ abstract class connectionAbstractClass {
 
 	public function commit()
 	{
-		return $this->doCommit();
+		$this->doCommit();
+		$keyName = 'transactionProcessing';
+		$this->_instanceParams[$keyName] = false;
 	}
 	abstract protected function doCommit();
 
 	public function rollback()
 	{
-		return $this->doRollback();
+		$this->doRollback();
+		$keyName = 'transactionProcessing';
+		$this->_instanceParams[$keyName] = false;
 	}
 	abstract protected function doRollback();
 	
+	protected function autoCommitGet()
+	{
+		return $this->doGetAutoCommit();
+	}
+	abstract protected function doGetAutoCommit();
+	
+	protected function autoCommitSet($autoCommit)
+	{
+		$this->doSetAutoCommit($autoCommit);
+	}
+	abstract protected function doSetAutoCommit($autoCommit);
 }
