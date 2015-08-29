@@ -115,10 +115,37 @@ class webApplicationClass extends applicationAbstractClass
 		die();
 	}
 	
+	public static function serviceName()
+	{
+		$keyName = __FUNCTION__;
+		if (!isset(self::$_staticParams[$keyName])) {
+			if (preg_match('%^(?P<name>[^/]+)%m', $_SERVER['SERVER_SOFTWARE'], $matchs)) {
+				self::$_staticParams[$keyName] = strtolower($matchs['name']);
+			} else {
+				self::$_staticParams[$keyName] = '';
+			};
+		}
+		return self::$_staticParams[$keyName];
+	}
+	
     public static function host()
 	{
-		$protocol = 'http' . (isset($_SERVER['SSL'])? 's' : '');
-		return "{$protocol}://{$_SERVER['HTTP_HOST']}";
+		$keyName = __FUNCTION__;
+		if (!isset(self::$_staticParams[$keyName])) {
+			$serviceName = static::serviceName();
+			$protocol = 'http';
+			switch ($serviceName) {
+				case 'apache' : 
+					$protocol = 'http' . (isset($_SERVER['SSL'])? 's' : '');
+					break;
+				
+				case 'nginx' : 
+					$protocol = 'http' . ((isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on'))? 's' : '');
+					break;
+			}
+			self::$_staticParams[$keyName] = "{$protocol}://{$_SERVER['HTTP_HOST']}";
+		}
+		return self::$_staticParams[$keyName];
 	} 	
 	
     public static function url()
@@ -212,5 +239,4 @@ class webApplicationClass extends applicationAbstractClass
 
 class requestHeader404ExceptionClass  extends \exception
 {
-	
 }
