@@ -59,16 +59,58 @@ class connectionClass extends  \m5D02F22739AA11E4B3C6005056847E34\databases\conn
 	
 	protected function doBegin() 
 	{
-		return $this->serverInstance->beginTransaction();
+		$sql = "
+			begin;
+		";
+		$this->execute($sql);
+		return true;
 	}
 
 	protected function doCommit() 
 	{
-		return $this->serverInstance->commit();
+		$sql = "
+			commit;
+		";
+		return $this->execute($sql);
 	}
 
 	protected function doRollback() 
 	{
-		return $this->serverInstance->rollBack();
+		$sql = "
+			rollback;
+		";
+		return $this->execute($sql);
+	}
+	
+	protected function doGetAutoCommit()
+	{
+		$sql = "
+			select @@autocommit autoCommit;		
+		";
+		$recordsetInstance = $this->query($sql);
+		$rowData = $recordsetInstance->fetchRow();
+		return $rowData['autoCommit'];
+	}
+	
+	protected function doSetAutoCommit($autoCommit)
+	{
+		static $maps = [
+			0 => 1,
+			1 => 0
+		];
+		 static $maps2 = [
+			true => 1,
+			false => 0,
+		 ];
+		$commit = $this->autoCommit;
+		if ($maps[$autoCommit] == $maps[$commit]) {
+			return ;
+		}
+		
+		$autoCommitSw = ($autoCommit) ? '1' : '0';
+		$sql = "
+			SET AUTOCOMMIT={$autoCommitSw};
+		";
+		$this->execute($sql);
 	}
 }
