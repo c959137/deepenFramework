@@ -81,10 +81,12 @@ trait arrayPathClass
 			if (!$path) {
 				continue;
 			}
-			if ($fullPath != '') $fullPath .= DIRECTORY_SEPARATOR; 
+			$ds = ($path[0] == '/') ? '' : DIRECTORY_SEPARATOR;
+			if ($fullPath != '') $fullPath .= $ds; 
 			$fullPath .= $path;
 		}
-		$fullPath = DIRECTORY_SEPARATOR . $fullPath;
+		$ds = ($fullPath[0] == '/') ? '' : DIRECTORY_SEPARATOR;
+		$fullPath = $ds . $fullPath;
 		return $fullPath;
 	}
 	
