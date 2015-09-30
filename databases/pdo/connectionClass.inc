@@ -13,7 +13,8 @@ class connectionClass extends  \m5D02F22739AA11E4B3C6005056847E34\databases\conn
 		$host = $connectionInformation['host'];
 		$username = $connectionInformation['username'];
 		$password = $connectionInformation['password'];
-		$dsn = "{$drive}:dbname={$dbname}; host={$host}";
+		$port = isset($connectionInformation['port']) ? $connectionInformation['port'] : '3306';
+		$dsn = "{$drive}:dbname={$dbname}; host={$host}; port={$port}";
 		$driverOptions = [
 			\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
 		];
