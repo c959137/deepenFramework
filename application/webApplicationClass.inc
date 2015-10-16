@@ -210,6 +210,7 @@ class webApplicationClass extends applicationAbstractClass
 	public static function activePageInstance()
 	{
 		$keyName = __FUNCTION__;
+		$keyName = 'activeInfo';
 		return isset(self::$_staticParams[$keyName]) ? self::$_staticParams[$keyName] : null;
 	}
 
