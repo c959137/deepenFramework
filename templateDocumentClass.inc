@@ -192,7 +192,9 @@ class templateDocumentClass
 				} else {
 					$customContent = $templateDocumentProviderInstance->queryValue($blockInfo['instance'], \m5D02F22739AA11E4B3C6005056847E34\constants\templateDocumentProviderModeConstantClass::MODE_BLOCK, $path . $blockName, $value);
 				};
-				
+				if (is_callable($value)) {
+					$value = call_user_func_array($value, [$this]);
+				}
 				if (!is_null($value)) {
 					if (!$customContent) {
 						if (is_callable($value)) {
