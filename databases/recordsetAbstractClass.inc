@@ -15,4 +15,9 @@ abstract class recordsetAbstractClass
 	abstract protected function doFetchRow();
 	
 	abstract protected function recordCountGet();
+	
+	protected function affectedRows()
+	{
+		return 0;
+	}
 }

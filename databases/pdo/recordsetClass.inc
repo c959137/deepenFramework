@@ -34,4 +34,10 @@ class recordsetClass extends \m5D02F22739AA11E4B3C6005056847E34\databases\record
 	protected function recordCountGet(){
 		return $this->statementInstance->rowCount();
 	}
+	
+	protected function affectedRowsGet()
+	{
+		return $this->statementInstance->rowCount();
+	}
+	
 }
