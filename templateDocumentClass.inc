@@ -162,6 +162,10 @@ class templateDocumentClass
 		return true;
 	}
 	
+	/**
+		輸出內容
+		param \m5D02F22739AA11E4B3C6005056847E34\templateDocumentProviderInterface $templateDocumentProviderInstance 套版資料供應實體
+	*/
 	public function out(\m5D02F22739AA11E4B3C6005056847E34\templateDocumentProviderInterface $templateDocumentProviderInstance)
 	{
 		$content = $this->templateContent;
@@ -231,5 +235,26 @@ class templateDocumentClass
 			}
 		}
 		return null;
+	}
+	
+	protected function blockListGet()
+	{
+		return isset($this->_instanceParams[self::BLOCK_LIST_KEYNAME]) ? $this->_instanceParams[self::BLOCK_LIST_KEYNAME] : [];
+		
+	}
+
+	protected function blockListSet_($value)
+	{
+		$this->_instanceParams[self::BLOCK_LIST_KEYNAME] = $value;
+	}
+	
+	protected function labelListGet()
+	{
+		return isset($this->_instanceParams[self::LABEL_LIST_KEYNAME]) ? $this->_instanceParams[self::LABEL_LIST_KEYNAME] : [];
+	}
+
+	protected function labelListSet_($value)
+	{
+		$this->_instanceParams[self::LABEL_LIST_KEYNAME] = $value;
 	}
 }
