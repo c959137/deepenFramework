@@ -127,3 +127,115 @@ function strToBool($value, $defaultValue = false)
 		return $defaultValue;
 	}
 }
+
+/**
+	取出指定序列中的指定的起點與數量陣列
+	
+	param integet $totalPages 總頁數
+	param integer $currentIndex 目前頁數
+	patam integer $btnCount 按鍵個數
+	
+*/
+function pageBtnList($totalPages, $currentIndex, $btnCount = 10)
+{
+	if ($totalPages < 1) {
+		throw new \exception("頁數小於一");
+	}
+	if ($currentIndex >= $totalPages) {
+		throw new \exception("索引值超過總數");
+	}
+
+	$pageBtnList = [
+		$currentIndex => [
+			'selected' => true
+		]
+	];
+	$averageBtnCount = floor(($btnCount - count($pageBtnList)) / 2);
+	$lIndex = $currentIndex;
+	$lCount = $averageBtnCount;
+	while ($lCount > 0) {
+		$lIndex--;
+		if ($lIndex < 0) {
+			break;
+		}
+		$pageBtnList[$lIndex] = [];
+		$lCount--;
+	}
+
+	$rIndex = $currentIndex;
+	$rCount = $btnCount - count($pageBtnList);
+	while ($rCount > 0) {
+		$rIndex++;
+		if ($rIndex >= $totalPages) {
+			break;
+		}
+		$pageBtnList[$rIndex] = [];
+		$rCount--;
+	}
+
+	while (($lCount > 0) && (count($pageBtnList) <  $btnCount)) {
+		$rIndex++;
+		if ($rIndex >= $totalPages) {
+			break;
+		}
+		$pageBtnList[$rIndex] = [];
+		$lCount--;
+	}
+	
+	while (($rCount > 0) && (count($pageBtnList) <  $btnCount)) {
+		$lIndex--;
+		if ($lIndex < 0) {
+			break;
+		}
+		$pageBtnList[$lIndex] = [];
+		$rCount--;
+	}
+
+	ksort($pageBtnList);
+	return $pageBtnList;
+}
+
+/*
+	取出指定序列中的指定的起點與數量陣列
+	
+	param integet $totalPages 總頁數
+	param integer $currentIndex 目前頁數
+	patam integer $btnCount 按鍵個數
+
+
+	pageBtnList2(5, 2, 10);
+	pageBtnList2(8, 2, 10);
+	pageBtnList2(20, 2, 10);
+	
+**/
+function pageBtnList2($totalPages, $currentIndex, $btnCount = 10)
+{
+	$difference = 1;
+	$sign = -1;
+	$showTime = [
+		$currentIndex => [
+			'selected' => true,
+		]
+	];
+	$minItem = 1;
+	$maxItem = $totalPages;
+	
+	$minOver = false;
+	$maxOver = false;
+
+	 while(count($showTime) < $btnCount && ($minOver==false || $maxOver ==false))
+	 {
+		 $addItem = $currentIndex + ($difference * $sign);
+		 if ($addItem < $minItem) {
+			 $minOver = true;
+		 } else if ($addItem > $maxItem) {
+			 $maxOver = true;
+		 } else {
+			$showTime[$addItem] = [];
+		 }
+		 $difference += ($sign == 1) ? 1 : 0;
+		 $sign *= -1;
+	 }
+	ksort($showTime);
+	return $showTime;
+}
