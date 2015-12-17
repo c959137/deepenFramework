@@ -57,11 +57,20 @@ if (!defined('UUID_NULL')) {
 	define('UUID_NULL', '00000000000000000000000000000000');
 	define('UUID_NULL_LONG', '00000000-0000-0000-0000-000000000000');
 };
+
 function uuidNull($longCode = false)
 {
 	return $longCode ? UUID_NULL_LONG : UUID_NULL;
 	static $data = '00000000-0000-0000-0000-000000000000';
 	return $longCode ? $data : str_replace('-', '', $data);
+}
+
+/*
+	uuid 格式確認, 只要符合長或短格式, 都傳回 true, 否則都傳回否.
+**/
+function uuidChecker($value)
+{
+	return preg_match('/^[0-9a-f]{32}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/im', $value);
 }
 
 function showScript($script)
