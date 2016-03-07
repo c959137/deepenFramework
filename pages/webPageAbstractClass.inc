@@ -186,6 +186,9 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 		if ($exceptionInstance instanceof \m5D02F22739AA11E4B3C6005056847E34\databases\exceptions\queryExceptionClass) {
 			showScript($exceptionInstance->sqlScript);
 			echo $exceptionInstance->getMessage(), '<br/>';
+		} else if ($exceptionInstance instanceof \m5D02F22739AA11E4B3C6005056847E34\databases\exceptions\executeExceptionClass) {
+			showScript($exceptionInstance->sqlScript);
+			echo $exceptionInstance->getMessage(), '<br/>';
 		} else {
 			var_dump($exceptionInstance);
 		};

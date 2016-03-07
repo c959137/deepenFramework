@@ -24,7 +24,6 @@ if (!isset($_SERVER['REDIRECT_URL'])) {
 class webApplicationClass extends applicationAbstractClass
 {
 	use \m5D02F22739AA11E4B3C6005056847E34\traits\propertysClass;
-	use \m5D02F22739AA11E4B3C6005056847E34\traits\arrayPathClass;
 	private static $_staticParams = [];
 	private $_instanceParams = [
 		'propertys' => [
