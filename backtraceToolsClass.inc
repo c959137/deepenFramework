@@ -92,10 +92,18 @@ class backtraceToolsClass {
 			break;
 		}
 		echo "XXX<br/>程式中斷<hr/>";
-		echo "檔案名稱 : {$traceInfo['file']}<br/>";
-		echo "程式行數 : {$traceInfo['line']}<br/>";
+		if (isset($traceInfo['file'])) {
+			echo "檔案名稱 : {$traceInfo['file']}<br/>";
+		}
+		if (isset($traceInfo['line'])) {
+			echo "程式行數 : {$traceInfo['line']}<br/>";
+		}
 		if ($msg) {
-			echo "中斷訊息 : {$msg}<br/>";
+			if (is_string($msg)) {
+				echo "中斷訊息 : {$msg}<br/>";
+			} else {
+				echo print_r($msg, true);
+			}
 		}
 		echo '<pre>';
 		print_r($traceInfoList);

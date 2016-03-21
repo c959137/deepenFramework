@@ -147,6 +147,34 @@ class webApplicationClass extends applicationAbstractClass
 		return self::$_staticParams[$keyName];
 	} 	
 	
+	public static function siteInfo()
+	{
+		$keyName = __FUNCTION__;
+		if (!isset(self::$_staticParams[$keyName])) {
+			$siteInfo = [];
+			//$_SERVER['HTTP_HOST'] = 'news3.tester.5915941.com';
+			if (!preg_match('/(?P<domain>[^:]+)(:(?P<port>[\d]+))?/sim', $_SERVER['HTTP_HOST'], $matchs)) {
+				xxx();
+			}
+			$serviceName = static::serviceName();
+			$siteInfo['protocol'] = 'http';
+			$siteInfo['domain'] = $matchs['domain'];
+			switch ($serviceName) {
+				case 'apache' : 
+					$siteInfo['protocol'] = 'http' . (isset($_SERVER['SSL'])? 's' : '');
+					break;
+				
+				case 'nginx' : 
+					$siteInfo['protocol'] = 'http' . ((isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on'))? 's' : '');
+					break;
+			}
+			$siteInfo['outSidePort'] = isset($matchs['port']) ? $matchs['port'] : (($siteInfo['protocol'] == 'http') ? '80' : '443');
+			$siteInfo['inSidePort'] = $_SERVER['SERVER_PORT'];
+			self::$_staticParams[$keyName] = $siteInfo;
+		}
+		return self::$_staticParams[$keyName];
+	}
+
     public static function url()
 	{
 		$keyName = __FUNCTION__;
