@@ -27,7 +27,7 @@ trait arrayPathClass
 		if (empty($path)) {
 			throw new \exception ("路徑不允許空值");
 		}
-		$list = explode('/', preg_replace('%[/]{2,}%im', '/', $path));
+		$list = explode(DIRECTORY_SEPARATOR, preg_replace('%[/]{2,}%im', DIRECTORY_SEPARATOR, $path));
 
 		$cmd = '';
 		foreach ($list as $keyName) {
