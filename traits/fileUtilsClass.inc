@@ -12,7 +12,10 @@ trait fileUtilsClass
 		}
 		
 		$umask = umask(0002);
-		$flag = mkdir($path, 0775, true);
+		$flag = @mkdir($path, 0775, true);
+        if ($flag === false) {
+            throw new \exception("建立目錄 {$path} 發生錯誤");
+        }
 		umask($umask);
 		/*
 		0664 => drw-r--r--

@@ -139,19 +139,24 @@ class templateDocumentClass
 		$className = get_called_class();
 		$blockList = &$this->_instanceParams[self::BLOCK_LIST_KEYNAME];
 		$labelList = &$this->_instanceParams[self::LABEL_LIST_KEYNAME];
-		foreach ($matchs["blockName"] as $idx => $blocName){
-			if (!isset($blockList[$blocName])) {
-				$childInstance = new $className($blocName, $this);
-				$childInstance->loadContents($matchs["rawData"][$idx]);
-				$childBlockUid = $childInstance->blockUid;
-				$blockList[$blocName] = [
-					'blockUid' => $childBlockUid,
-					'instance' => $childInstance,
-				];
-				$rawData = preg_replace("%<!--:{$blocName}:-->(?P<rawData>.*?)<!--/:{$blocName}:-->%si", "(t:-{$childInstance->blockUid}-:)", $rawData);
-			}
-		};
-		$this->propertySet('templateContent', $rawData);
+		if (isset($matchs["blockName"])) {
+			foreach ($matchs["blockName"] as $idx => $blocName){
+				if (!isset($blockList[$blocName])) {
+					$childInstance = new $className($blocName, $this);
+					$childInstance->loadContents($matchs["rawData"][$idx]);
+					$childBlockUid = $childInstance->blockUid;
+					$blockList[$blocName] = [
+						'blockUid' => $childBlockUid,
+						'instance' => $childInstance,
+					];
+					$rawData = preg_replace("%<!--:{$blocName}:-->(?P<rawData>.*?)<!--/:{$blocName}:-->%si", "(t:-{$childInstance->blockUid}-:)", $rawData);
+				}
+			};
+			$this->propertySet('templateContent', $rawData);
+		}
+		if (defined('AAAAAAAAAA')) {
+			var_dump($rawData);
+		}
 		if (preg_match_all('/\(s:-(?P<labelName>.*?)-:\)/si', $rawData, $matchs)){
 			foreach($matchs["labelName"] as $labelName){
 				$labelList[$labelName] = '';
