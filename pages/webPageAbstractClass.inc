@@ -60,6 +60,7 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 				self::$_staticParams['requestData'] = $requestData;
 				$applicationInstance = $this->applicationInstance;
 				if ($applicationInstance::isAjax()) {
+					header('Content-Type: application/json; charset=utf-8');
 					echo json_encode($requestData);
 					die();
 				}
@@ -177,7 +178,8 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 				'line' => $exceptionInstance->getLine(),
 			];
 			header_remove();
-			ob_end_clean();
+			@ob_end_clean();
+			header('Content-Type: application/json; charset=utf-8');
 			echo json_encode($responseData);
 			die();
 		}
