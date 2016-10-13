@@ -20,4 +20,9 @@ abstract class recordsetAbstractClass
 	{
 		return 0;
 	}
+	
+	public function nextRowset()
+	{
+		return false;
+	}
 }

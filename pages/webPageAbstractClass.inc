@@ -173,6 +173,7 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 			$responseData  = [
 				'exitCode' => false,
 				'exceptionClass' => get_class($exceptionInstance),
+				'code' => $exceptionInstance->getCode(),
 				'message' => $exceptionInstance->getMessage(),
 				'file' => $exceptionInstance->getFile(),
 				'line' => $exceptionInstance->getLine(),
