@@ -197,6 +197,7 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 		};
 		echo "onOutThrow:<br/>"; 
 		var_dump($onOutThrow);
+		echo get_class($exceptionInstance), '<br/>';
 		echo "file => {$exceptionInstance->getFile()}<br/>";
 		echo "line => {$exceptionInstance->getLine()}<br/>";
 		xxx();
