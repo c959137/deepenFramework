@@ -70,7 +70,7 @@ function uuidNull($longCode = false)
 **/
 function uuidChecker($value)
 {
-	return preg_match('/^[0-9a-f]{32}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/im', $value);
+	return preg_match('/^[0-9a-f]{32}$|^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/im', $value);
 }
 
 function showScript($script)

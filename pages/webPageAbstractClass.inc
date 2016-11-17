@@ -60,6 +60,7 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 				self::$_staticParams['requestData'] = $requestData;
 				$applicationInstance = $this->applicationInstance;
 				if ($applicationInstance::isAjax()) {
+					header('Content-Type: application/json; charset=utf-8');
 					echo json_encode($requestData);
 					die();
 				}
@@ -172,12 +173,14 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 			$responseData  = [
 				'exitCode' => false,
 				'exceptionClass' => get_class($exceptionInstance),
+				'code' => $exceptionInstance->getCode(),
 				'message' => $exceptionInstance->getMessage(),
 				'file' => $exceptionInstance->getFile(),
 				'line' => $exceptionInstance->getLine(),
 			];
 			header_remove();
-			ob_end_clean();
+			@ob_end_clean();
+			header('Content-Type: application/json; charset=utf-8');
 			echo json_encode($responseData);
 			die();
 		}
@@ -194,6 +197,7 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 		};
 		echo "onOutThrow:<br/>"; 
 		var_dump($onOutThrow);
+		echo get_class($exceptionInstance), '<br/>';
 		echo "file => {$exceptionInstance->getFile()}<br/>";
 		echo "line => {$exceptionInstance->getLine()}<br/>";
 		xxx();

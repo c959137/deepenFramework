@@ -1,7 +1,7 @@
 <?php
 namespace m5D02F22739AA11E4B3C6005056847E34\databases\pdo;
-\m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('recordsetAbstractClass', 'databases');
-class recordsetClass extends \m5D02F22739AA11E4B3C6005056847E34\databases\recordsetAbstractClass
+use \m5D02F22739AA11E4B3C6005056847E34\databases\recordsetAbstractClass as recordsetAbstractClass;
+class recordsetClass extends recordsetAbstractClass
 {
 	use	\m5D02F22739AA11E4B3C6005056847E34\traits\propertysClass;
 	private $_instanceParams = [
@@ -40,4 +40,11 @@ class recordsetClass extends \m5D02F22739AA11E4B3C6005056847E34\databases\record
 		return $this->statementInstance->rowCount();
 	}
 	
+	/*
+		取得下一個資料集
+	**/
+	public function nextRowset()
+	{
+		return $this->statementInstance->nextRowset();
+	}
 }
