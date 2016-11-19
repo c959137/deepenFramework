@@ -11,6 +11,9 @@ namespace m5D02F22739AA11E4B3C6005056847E34\pages;
 \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('resourceTypeConstantClass', 'constants');
 \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('templateDocumentProviderModeConstantClass', 'constants');
 
+use m5D02F22739AA11E4B3C6005056847E34\constants\requestModeConstantClass as requestModeConstantClass;
+use m5D02F22739AA11E4B3C6005056847E34\application\webApplicationClass as webApplicationClass;
+
 /**
 * 網頁抽象類別
 */
@@ -52,8 +55,7 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	
 	final protected function onCreate()
 	{
-		$webApplicationClass = \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('webApplicationClass', 'application');
-		if ($webApplicationClass::isActivePageInstance($this)) {
+		if (webApplicationClass::isActivePageInstance($this)) {
 			try {
 				$this->onBeforeRequest();
 				$requestData = $this->requestHandle();
@@ -169,7 +171,7 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	*/
 	protected function onExceptions(\exception $exceptionInstance, $onOutThrow = false)
 	{	
-		if (\m5D02F22739AA11E4B3C6005056847E34\application\webApplicationClass::isAjax()) {
+		if (webApplicationClass::isAjax()) {
 			$responseData  = [
 				'exitCode' => false,
 				'exceptionClass' => get_class($exceptionInstance),
@@ -228,11 +230,10 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 			}
 
 			if (!empty($methodModeList)) {
-				$requestModeConstantClass = \m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('requestModeConstantClass', 'constants');
 				$methodModeList2 = $methodModeList;
 				$methodModeList = [];
 				foreach ($methodModeList2 as $methodMode) {
-					$requestModeConstantClass::resourceTypeChecker($methodMode);
+					requestModeConstantClass::resourceTypeChecker($methodMode);
 					$methodModeList[$methodMode] = $methodMode;
 				}
 			}
@@ -251,9 +252,15 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 			return null;
 		}
 		$requestInfo = $this->_instanceParams[$keyName][$requestName];
-		if (empty($requestInfo['methodModeList']) || (isset($requestInfo['methodModeList'][$_SERVER['REQUEST_METHOD']]))) {
-			return $requestInfo['registerMethodInfo'];
-		}
+		if (isset($requestInfo['methodModeList'][requestModeConstantClass::REQUEST_MODE_AJAX])) {
+			if (webApplicationClass::isAjax()) {
+				return $requestInfo['registerMethodInfo'];
+			}
+		} else {
+			if (empty($requestInfo['methodModeList']) || (isset($requestInfo['methodModeList'][$_SERVER['REQUEST_METHOD']]))) {
+				return $requestInfo['registerMethodInfo'];
+			}
+		};
 		return null;
 	}
 	
@@ -523,6 +530,6 @@ abstract class webPageAbstractClass extends pageAbstractClass implements \m5D02F
 	public static function requestData() 
 	{
 		$keyName = __FUNCTION__;
-		return isset(self::$_staticParams[$keyName]) ? self::$_staticParams[$keyName] : \m5D02F22739AA11E4B3C6005056847E34\application\webApplicationClass::requestData();
+		return isset(self::$_staticParams[$keyName]) ? self::$_staticParams[$keyName] : webApplicationClass::requestData();
 	}
 }
