@@ -60,7 +60,6 @@ class webApplicationClass extends applicationAbstractClass
 			return $pageInfo['instance']->out();
 		} else {
 			throw new requestHeader404ExceptionClass();
-			//static::header404();
 		};
 	}
 	
