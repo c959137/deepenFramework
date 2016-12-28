@@ -16,10 +16,11 @@ class connectionClass extends  \m5D02F22739AA11E4B3C6005056847E34\databases\conn
 		$port = isset($connectionInformation['port']) ? $connectionInformation['port'] : '3306';
 		$dsn = "{$drive}:dbname={$dbname}; host={$host}; port={$port}";
 		$driverOptions = [
-			\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
+			\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+			\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
 		];
 		$serverInstance = new \PDO($dsn, $username, $password, $driverOptions);
-		$serverInstance->query('SET NAMES UTF8');
+		//$serverInstance->query('SET NAMES UTF8');
 		return $serverInstance;
 	}
 
@@ -114,4 +115,30 @@ class connectionClass extends  \m5D02F22739AA11E4B3C6005056847E34\databases\conn
 		";
 		$this->execute($sql);
 	}
+	
+	/*
+		取得程序鎖定
+	**/
+	public function lock($lockName, $timeout = 10)
+	{
+		$recordsetInstance = $this->query("select get_lock ('{$lockName}', {$timeout}) lockStatus;");
+		$rowData = $recordsetInstance->fetchRow();
+		$recordsetInstance->statementInstance->closeCursor();
+		if ($rowData['lockStatus'] === 0) {
+			throw new \exception('無法取得程序鎖定');
+		}
+	}
+	
+	/*
+		取得程序鎖定
+	**/
+	public function unLock($lockName)
+	{
+		$recordsetInstance = $this->query("select RELEASE_LOCK ('{$lockName}') lockStatus;");
+		$rowData = $recordsetInstance->fetchRow();
+		$recordsetInstance->statementInstance->closeCursor();
+		if ($rowData['lockStatus'] === 0) {
+			throw new \exception('無法取得程序鎖定');
+		}
+	}	
 }
