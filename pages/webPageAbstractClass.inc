@@ -59,11 +59,17 @@ abstract class webPageAbstractClass extends pageAbstractClass implements templat
 				$requestData = $this->requestHandle();
 				self::$_staticParams['requestData'] = $requestData;
 				$applicationInstance = $this->applicationInstance;
+				
+				if ($requestData) {
+					$this->responseOut($requestData);
+				}
+/*
 				if ($applicationInstance::isAjax()) {
 					header('Content-Type: application/json; charset=utf-8');
 					echo json_encode($requestData);
 					die();
 				}
+*/				
 			} catch (\exception $exceptionInstance) {
 				$this->onExceptions($exceptionInstance);			
 			}
@@ -178,13 +184,15 @@ abstract class webPageAbstractClass extends pageAbstractClass implements templat
 				'file' => $exceptionInstance->getFile(),
 				'line' => $exceptionInstance->getLine(),
 			];
+			$this->responseExceptionOut($responseData);
+			die();
+			
 			header_remove();
 			@ob_end_clean();
 			header('Content-Type: application/json; charset=utf-8');
 			echo json_encode($responseData);
 			die();
 		}
-	
 	
 		if ($exceptionInstance instanceof \m5D02F22739AA11E4B3C6005056847E34\databases\exceptions\queryExceptionClass) {
 			showScript($exceptionInstance->sqlScript);
@@ -530,4 +538,29 @@ abstract class webPageAbstractClass extends pageAbstractClass implements templat
 		$keyName = __FUNCTION__;
 		return isset(self::$_staticParams[$keyName]) ? self::$_staticParams[$keyName] : webApplicationClass::requestData();
 	}
+	
+	protected function responseOut($responseData)
+	{
+		if (webApplicationClass::isAjax()) {
+			if ($isException) {
+				header_remove();
+				@ob_end_clean();
+			}
+			header('Content-Type: application/json; charset=utf-8');
+			echo json_encode($responseData);
+			die();
+		}
+	}
+	
+	protected function responseExceptionOut($responseData)
+	{
+		if (webApplicationClass::isAjax()) {
+			header_remove();
+			@ob_end_clean();
+			header('Content-Type: application/json; charset=utf-8');
+			echo json_encode($responseData);
+			die();
+		}
+	}
+	
 }
