@@ -542,10 +542,6 @@ abstract class webPageAbstractClass extends pageAbstractClass implements templat
 	protected function responseOut($responseData)
 	{
 		if (webApplicationClass::isAjax()) {
-			if ($isException) {
-				header_remove();
-				@ob_end_clean();
-			}
 			header('Content-Type: application/json; charset=utf-8');
 			echo json_encode($responseData);
 			die();
