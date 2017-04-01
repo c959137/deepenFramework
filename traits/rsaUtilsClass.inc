@@ -3,6 +3,24 @@ namespace m5D02F22739AA11E4B3C6005056847E34\traits;
 
 trait rsaUtilsClass 
 {
+	public static function privateKeyChecker($privateKey)
+	{
+		$keyRes = openssl_pkey_get_private($privateKey);
+		if (!$keyRes) {
+			throw new \exception('私密金鑰無效');
+		};
+		return $keyRes;
+	}
+
+	public static function publicKeyChecker($publicKey)
+	{
+		$keyRes = openssl_pkey_get_public($publicKey);
+		if (!$keyRes) {
+			throw new \exception('平台公鑰無效');
+		};
+		return $keyRes;
+	}
+
 	/*
 		平台公鑰解密
 	**/	
