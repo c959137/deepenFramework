@@ -202,23 +202,26 @@ class webApplicationClass extends applicationAbstractClass
 	
 	public static function sessionRead($sessionKeyName, $defaultValue = null)
 	{
-		if (session_id() == '') {
+		if (session_status() == PHP_SESSION_NONE) {
 			session_start();
 		}
-		return (isset($_SESSION[__CLASS__][$sessionKeyName])) ? $_SESSION[__CLASS__][$sessionKeyName] : $defaultValue;
+		$data = (isset($_SESSION[__CLASS__][$sessionKeyName])) ? $_SESSION[__CLASS__][$sessionKeyName] : $defaultValue;
+		session_write_close();
+		return $data;
 	}
 
 	public static function sessionWrite($sessionKeyName, $sessionValue)
 	{
-		if (session_id() == '') {
+		if (session_status() == PHP_SESSION_NONE) {
 			session_start();
 		}
 		$_SESSION[__CLASS__][$sessionKeyName] = $sessionValue;
+		session_write_close();
 	}
 	
 	public static function sessionRemove($sessionKeyName = '')
 	{
-		if (session_id() == '') {
+		if (session_status() == PHP_SESSION_NONE) {
 			session_start();
 		}
 		if ($sessionKeyName == '') {
@@ -226,6 +229,16 @@ class webApplicationClass extends applicationAbstractClass
 		} else {
 			unset($_SESSION[__CLASS__][$sessionKeyName]);
 		};
+		session_write_close();
+	}
+
+	public static function sessionDestroy()
+	{
+		if (session_status() == PHP_SESSION_NONE) {
+			session_start();
+		}
+		session_destroy();
+		session_write_close();
 	}
 	
 	public static function isAjax()
