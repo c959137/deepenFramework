@@ -1,7 +1,7 @@
 <?php
 namespace m5D02F22739AA11E4B3C6005056847E34\application;
-\m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('applicationAbstractClass', 'application');
-\m5D02F22739AA11E4B3C6005056847E34\applicationFrameworkClass::classLoader('arrayPathClass', 'traits');
+
+use m5D02F22739AA11E4B3C6005056847E34\moduleManagerClass as moduleManagerClass;
 
 /**
 * @brief 網頁列應用類別
@@ -202,23 +202,30 @@ class webApplicationClass extends applicationAbstractClass
 	
 	public static function sessionRead($sessionKeyName, $defaultValue = null)
 	{
-		if (session_id() == '') {
+		if (session_status() == PHP_SESSION_NONE) {
 			session_start();
 		}
-		return (isset($_SESSION[__CLASS__][$sessionKeyName])) ? $_SESSION[__CLASS__][$sessionKeyName] : $defaultValue;
+		$data = (isset($_SESSION[__CLASS__][$sessionKeyName])) ? $_SESSION[__CLASS__][$sessionKeyName] : $defaultValue;
+		if (static::sessionAutoClosed()) {
+			session_write_close();
+		}
+		return $data;
 	}
 
 	public static function sessionWrite($sessionKeyName, $sessionValue)
 	{
-		if (session_id() == '') {
+		if (session_status() == PHP_SESSION_NONE) {
 			session_start();
 		}
 		$_SESSION[__CLASS__][$sessionKeyName] = $sessionValue;
+		if (static::sessionAutoClosed()) {
+			session_write_close();
+		}
 	}
 	
 	public static function sessionRemove($sessionKeyName = '')
 	{
-		if (session_id() == '') {
+		if (session_status() == PHP_SESSION_NONE) {
 			session_start();
 		}
 		if ($sessionKeyName == '') {
@@ -226,6 +233,20 @@ class webApplicationClass extends applicationAbstractClass
 		} else {
 			unset($_SESSION[__CLASS__][$sessionKeyName]);
 		};
+		if (static::sessionAutoClosed()) {
+			session_write_close();
+		}
+	}
+
+	public static function sessionDestroy()
+	{
+		if (session_status() == PHP_SESSION_NONE) {
+			session_start();
+		}
+		session_destroy();
+		if (static::sessionAutoClosed()) {
+			session_write_close();
+		}
 	}
 	
 	public static function isAjax()
@@ -261,6 +282,29 @@ class webApplicationClass extends applicationAbstractClass
 		}
 		$className = self::$_staticParams['activeInfo']['fullClassName'];
 		return $className::matchs();
+	}
+	
+	
+	const SESSION_AUTO_CLOSED = 'SESSION_AUTO_CLOSED';
+	const SESSION_CONFIG = 'sessionConfig';
+	/*
+		完成 session 動作後是否自動關閉
+		
+	**/
+	public static function sessionAutoClosed()
+	{
+		$keyName = __FUNCTION__;
+		if (!isset(self::$_staticParams[$keyName])) {
+			if (isset($_SERVER[self::SESSION_AUTO_CLOSED])) {
+				self::$_staticParams[$keyName] = strToBool($_SERVER[self::SESSION_AUTO_CLOSED]);
+			}
+
+			if (!isset(self::$_staticParams[$keyName])) {
+				$applicationConfig = moduleManagerClass::applicationConfigValue(self::SESSION_CONFIG, [$keyName => false]);
+				self::$_staticParams[$keyName] = isset($applicationConfig[$keyName]) ?  strToBool($applicationConfig[$keyName]) : false;
+			}
+		}
+		return self::$_staticParams[$keyName];
 	}
 }
 
