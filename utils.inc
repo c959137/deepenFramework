@@ -248,3 +248,63 @@ function pageBtnList2($totalPages, $currentIndex, $btnCount = 10)
 	ksort($showTime);
 	return $showTime;
 }
+
+function implodeUrl(array $urlComponents)
+{
+	$maps = [
+		'scheme' => '://',
+		'user' => //':',
+			function($name, $info){
+				if (!isset($info['pass'])) {
+					return '';
+				}
+				return $info[$name] . ':';
+			},
+		'pass' => //'@',
+			function($name, $info){
+				if (!isset($info['user'])) {
+					return '';
+				}
+				return $info[$name] . '@';
+			},
+		'host' => '',
+		'port' => 
+			function($name, $info){
+				$defaultPort = ($info['scheme'] == 'http') ? '80' : '443';
+				return $info[$name] == $defaultPort ? '' : ':' . $info[$name];
+			},
+		'path' => '',
+		'query' => //'',
+			function($name, $info){
+				return '?' . $info[$name];
+			},
+		'fragment' => //'',
+			function($name, $info){
+				return '#' . $info[$name];
+			},
+	];
+	$url = '';
+	foreach ($maps as $k => $v) {
+		if (!isset($urlComponents[$k])) {
+			continue;
+		}
+		$value = is_callable($v) ? $v($k, $urlComponents) : $urlComponents[$k] . $v;
+		$url .= $value;
+	}
+	return $url;
+}
+
+/*
+	取得陣列路徑的值, 如果沒有指定的路徑則回傳預設值
+**/
+function pathValue(array $data, $path = '', $defaultValue = null)
+{
+		$pathInfo = explode('/', $path);
+		$cmd = '';
+		foreach ($pathInfo as $k) {
+			if (!$k) {continue;};
+			$cmd .= "['{$k}']";
+		}
+		$cmd = "return isset(\$data{$cmd}) ? \$data{$cmd} : \$defaultValue;";
+		return eval($cmd);
+}
