@@ -15,12 +15,14 @@ class httpContentTypeConstantClass {
 	const CT_JSON = 'json';
 	const CT_JS = 'js';
 	const CT_HTML = 'html';
+	const CT_XML = 'xml';
 	
 	private static $_staticParams = [
 		self::CONTENT_TYPE_LIST => [
-			self::CT_JSON => 'application/json; charset=UTF-8',
-			self::CT_JS 	=> 'text/javascript; charset=UTF-8',
-			self::CT_HTML => 'text/html; charset=utf-8',
+			self::CT_JSON   => 'application/json; charset=UTF-8',
+			self::CT_JS 	  => 'text/javascript; charset=UTF-8',
+			self::CT_HTML   => 'text/html; charset=utf-8',
+      self::CT_XML    => 'text/xml; charset=utf-8',
 		]
 	];
 	
