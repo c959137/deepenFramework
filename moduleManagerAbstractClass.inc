@@ -139,16 +139,14 @@ abstract class moduleManagerAbstractClass
 		}
 		return self::$_staticParams[$keyName];
 	}
-	
-	public static function applicationConfigValue($name, $defaultValue)
-	{
-		$applicationConfig = static::applicationConfig();
-		return isset($applicationConfig[$name]) ? $applicationConfig[$name] : $defaultValue;
-	}
 
 	public static function show()
 	{
 		var_dump(self::$_staticParams);
 	}
-}
 
+	public static function applicationConfigValue($valuePath, $defaultValue)
+	{
+		return pathValue(static::applicationConfig(), $valuePath, $defaultValue);
+	}
+}
